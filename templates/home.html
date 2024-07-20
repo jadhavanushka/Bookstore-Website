@@ -5,59 +5,6 @@
 {% block content %}
 <!-- Main Wrapper Start -->
 <div class="wrapper">
-    <!-- Header Start -->
-    <header class="header ">
-        <div class="nav ">
-            <nav class="navbar navbar-expand-lg">
-                <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename = 'logo.svg') }}" alt="logo"
-                        style="width: 200px; margin-top: -10px; margin-left: 0px;" /></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse " id="navbarNav" style="margin-left: 60%;">
-                    <div class="mr-auto"></div>
-                    <ul class="navbar-nav ">
-                        <li class="nav-item active">
-                            <a class="nav-link" style="color: #000;" href="{{ url_for('home') }}">Home <span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" style="color: #000;" href="{{ url_for('shop') }}">Books</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" style="color: #000;" href="{{ url_for('cart') }}">Cart</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" style="color: #000;" href="{{ url_for('login') }}">Login</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            <div class="header__main-right">
-                <div class="header-toolbar-wrap">
-                    <div class="header-toolbar">
-                        <div class="search-container right-element ml-3 mr-4 text-white">
-                            <form method="post" action="/shop/search">
-                            <input class="" type="search" name="searchbook"
-                                placeholder="Search book or author" id="searchField" autocomplete="off" value="">
-                                <button type="submit" style="border: none; size: 0.01px;"></button>
-                            <div class="searchIcon"><i class="fa fa-search"></i></div>
-                        </form>
-                        </div>
-                        <div class="header-toolbar__item d-block d-lg-none">
-                            <a href="#offcanvasMenu" class="header-toolbar__btn toolbar-btn menu-btn">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <!-- </div> -->
-    </header>
-
-
 
     <main class="main-content-wrapper">
         <!-- Slider area Start -->
@@ -104,7 +51,7 @@
 
                 {% for book in new %}
                 <div class="featured_book_card">
-
+                    <a href="shop/{{book.isbn}}">
                     <div class="featurde_book_img">
                         <img src="{{  book.Image_URL_L  }}">
                     </div>
@@ -113,9 +60,10 @@
                         <h2>{{ book.book_title }}</h2>
                         <p class="writer">{{ book.book_author }}</p>
                         <!-- <div class="categories">Thriller, Horror, Romance</div> -->
-                        <p class="book_price text-secondary">₹ {{ book.price }}</p><a href="#" class="f_btn">Learn
-                            More</a>
+                        <p class="book_price text-secondary">₹ {{ book.price }}</p>
+                        <a href="shop/{{book.isbn}}" class="f_btn">Learn More</a>
                     </div>
+                    </a>
                 </div>
                 {% endfor %}
 
@@ -135,6 +83,7 @@
 
                 {% for book in featured %}
                 <div class="featured_book_card">
+                    <a href="shop/{{book.isbn}}">
 
                     <div class="featurde_book_img">
                         <img src="{{  book.Image_URL_L  }}">
@@ -145,18 +94,15 @@
                         <p class="writer">{{ book.book_author }}</p>
                         <!-- <div class="categories">Thriller, Horror, Romance</div> -->
                         <p class="book_price text-secondary">₹ {{ book.price }}</p>
-                        <a href="#" class="f_btn">Learn More</a>
+                        <a href="shop/{{book.isbn}}" class="f_btn">Learn More</a>
                     </div>
+                    </a>
                 </div>
                 {% endfor %}
 
             </div>
 
         </div>
-
-
-
-
 
         <!--Classics-->
         <div class="classics_books">
@@ -167,6 +113,7 @@
 
                 {% for book in classic %}
                 <div class="featured_book_card">
+                    <a href="shop/{{book.isbn}}">
 
                     <div class="featurde_book_img">
                         <img src="{{  book.Image_URL_L  }}">
@@ -177,8 +124,9 @@
                         <p class="writer">{{ book.book_author }}</p>
                         <!-- <div class="categories">Thriller, Horror, Romance</div> -->
                         <p class="book_price text-secondary">₹ {{ book.price }}</p>
-                        <a href="#" class="f_btn">Learn More</a>
+                        <a href="shop/{{book.isbn}}" class="f_btn">Learn More</a>
                     </div>
+                    </a>
                 </div>
                 {% endfor %}
 
@@ -194,4 +142,4 @@
         }
     </style>
 
-    {% endblock %}
+{% endblock %}

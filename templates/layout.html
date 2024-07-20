@@ -6,75 +6,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %}</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link rel="stylesheet" href="   https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <!-- Font Awesome: -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}" />
 </head>
 
-<body >
+<body>
+
+    {% include 'includes/_navbar.html' %}
 
 
     <div class="content">
-
+        {% include 'includes/_messages.html' %}
         {% block content %}{% endblock %}
 
     </div>
-
-
-
-
-
-
-    <!-- Footer -->
-
-    <footer class="a-footer">
-        <div class="container">
-            <div class="row">
-                <div class="footer-col">
-                    <h4>Help</h4>
-                    <ul>
-                        <li><a href="#">Payment</a></li>
-                        <li><a href="#">Delivery</a></li>
-                        <!-- <li><a href="#">Return of books</a></li> -->
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>About</h4>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">History</a></li>
-                        <li><a href="#">Privacy policy</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Catalog</h4>
-                    <ul>
-                        <li><a href="#">New Arrivals</a></li>
-                        <li><a href="#">Featured</a></li>
-                        <li><a href="#">Classics</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-
-                    <h4>Contact</h4>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-
-
-
     <div class="global-overlay"></div>
+
+
+    {% include 'includes/_footer.html' %}
+
 
     <script src="{{ url_for('static', filename = 'script.js') }}"></script>
     <script src="{{ url_for('static', filename = 'vendor.js') }}"></script>
@@ -92,19 +47,16 @@
         crossorigin="anonymous"></script>
     <script>"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"</script>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
-    <!-- Default theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- HTMX - for dynamic content loading -->
     <script src="https://unpkg.com/htmx.org@1.1.0"></script>
+
+    <!-- Custom Script for CSRF. Used for handling CSRF tokens with HTMX -->
     <script>
         document.body.addEventListener('htmx:configRequest', (event) => {
             event.detail.headers['X-CSRFToken'] = 'fBKpAFUxEVV6T4wZ7mflPltWP6DgeYHbgudWpYZdNJvw62A7K8fzovT5RzAcfL6j';
         })
     </script>
 
-    </div>
 </body>
 
 </html>
