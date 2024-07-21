@@ -3,143 +3,112 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<!-- Main Wrapper Start -->
-<div class="wrapper">
 
-    <main class="main-content-wrapper">
-        <!-- Slider area Start -->
-        <section class="homepage-slider mb--75 mb-md--55">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div id="site">
-                            <div class="col-lg-6 col-md-12 site-title text-dark">
-                                <h1 class="title-text text-uppercase"
-                                    style="font-size: 48px; font-weight: bold; margin: 20px 0;">
-                                    BOOKS WILL EXPAND YOUR KNOWLEDGE
-                                </h1>
-                                <p>
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Adipisci
-                                    harum, tempora corrupti quisquam vero qui facere consequatur
-                                    repudiandae, inventore voluptas tempore ad doloribus. Voluptatum
-                                    totam ducimus, aliquid ipsam sapiente illum!
-                                </p>
-                                <div class="site-buttons" style="margin: 20px 0;">
-                                    <a href="{{ url_for('shop') }}" class="site-buttons">
-                                        <div class="d-flex flex-row flex-wrap">
-                                            <button type="button" class="btn button btn-success mr-4"
-                                                style="margin: 20px o; width: 200px; padding: 10px 0;">
-                                                Explore
-                                            </button>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<section class="hero">
+    <div class="container col-xxl-8">
+        <div class="row flex-lg-row align-items-start g-5 py-5">
+            <div class="flex-column w-50 py-4 px-lg-2 px-sm-4">
+                <h1 class="display-4 lh-1 mb-3 text-uppercase">
+                    Discover Your Next Adventure</h1>
+                <p class="lead mb-4" style="font-weight: 400;">
+                    Every book has the power to transport you to new worlds. Whether you’re seeking a thrilling mystery,
+                    a heartwarming romance, or an inspiring biography, we have something for every reader.
+                </p>
+                <a href="{{ url_for('shop') }}">
+                    <button type="button" class="btn explore-btn btn-lg px-4 mb-4">
+                        Explore books
+                    </button>
+                </a>
             </div>
-        </section>
-        <!-- Slider area End -->
+        </div>
+    </div>
+</section>
 
+<section class="container mt-4 py-4">
+    <h1 class="text-center mb-3">New Arrivals</h1>
+    <div class="featured-books">
 
-        <div class="arrivals_books">
+        {% for book in new %}
 
-            <h1>New Arrivals</h1>
-
-            <div class="featured_book_box">
-
-                {% for book in new %}
-                <div class="featured_book_card">
+        <div class="py-4">
+            <div class="card">
+                <a href="shop/{{book.isbn}}">
+                    <img src="{{  book.Image_URL_L  }}" class="card-img-top" alt="{{ book.book_title }}">
+                </a>
+                <div class="card-body">
                     <a href="shop/{{book.isbn}}">
-                    <div class="featurde_book_img">
-                        <img src="{{  book.Image_URL_L  }}">
-                    </div>
-
-                    <div class="featurde_book_tag">
-                        <h2>{{ book.book_title }}</h2>
-                        <p class="writer">{{ book.book_author }}</p>
-                        <!-- <div class="categories">Thriller, Horror, Romance</div> -->
-                        <p class="book_price text-secondary">₹ {{ book.price }}</p>
-                        <a href="shop/{{book.isbn}}" class="f_btn">Learn More</a>
-                    </div>
+                        <h5 class="card-title" title="{{ book.book_title }}">{{ book.book_title }}</h5>
                     </a>
+                    <p class="card-text">{{ book.book_author }}</p>
+                    <p class="card-text price">₹ {{ book.price }}</p>
                 </div>
-                {% endfor %}
-
+                <div class="card-footer">
+                    <a href="shop/{{book.isbn}}">Learn More</a>
+                </div>
             </div>
-
         </div>
 
+        {% endfor %}
 
-        <!-- Features -->
+    </div>
+</section>
 
+<section class="container mt-3 py-4">
+    <h1 class="text-center mb-3">Featured</h1>
+    <div class="featured-books">
 
-        <div class="featured_books">
+        {% for book in featured %}
 
-            <h1>Featured Books</h1>
-
-            <div class="featured_book_box">
-
-                {% for book in featured %}
-                <div class="featured_book_card">
+        <div class="py-4">
+            <div class="card">
+                <a href="shop/{{book.isbn}}">
+                    <img src="{{  book.Image_URL_L  }}" class="card-img-top" alt="{{ book.book_title }}">
+                </a>
+                <div class="card-body">
                     <a href="shop/{{book.isbn}}">
-
-                    <div class="featurde_book_img">
-                        <img src="{{  book.Image_URL_L  }}">
-                    </div>
-
-                    <div class="featurde_book_tag">
-                        <h2>{{ book.book_title }}</h2>
-                        <p class="writer">{{ book.book_author }}</p>
-                        <!-- <div class="categories">Thriller, Horror, Romance</div> -->
-                        <p class="book_price text-secondary">₹ {{ book.price }}</p>
-                        <a href="shop/{{book.isbn}}" class="f_btn">Learn More</a>
-                    </div>
+                        <h5 class="card-title" title="{{ book.book_title }}">{{ book.book_title }}</h5>
                     </a>
+                    <p class="card-text">{{ book.book_author }}</p>
+                    <p class="card-text price">₹ {{ book.price }}</p>
                 </div>
-                {% endfor %}
-
+                <div class="card-footer">
+                    <a href="shop/{{book.isbn}}">Learn More</a>
+                </div>
             </div>
-
         </div>
 
-        <!--Classics-->
-        <div class="classics_books">
+        {% endfor %}
 
-            <h1>Classics</h1>
+    </div>
+</section>
 
-            <div class="featured_book_box">
+<section class="container mt-3 py-4">
+    <h1 class="text-center mb-3">Classics</h1>
+    <div class="featured-books">
 
-                {% for book in classic %}
-                <div class="featured_book_card">
+        {% for book in classic %}
+
+        <div class="py-4">
+            <div class="card">
+                <a href="shop/{{book.isbn}}">
+                    <img src="{{  book.Image_URL_L  }}" class="card-img-top" alt="{{ book.book_title }}">
+                </a>
+                <div class="card-body">
                     <a href="shop/{{book.isbn}}">
-
-                    <div class="featurde_book_img">
-                        <img src="{{  book.Image_URL_L  }}">
-                    </div>
-
-                    <div class="featurde_book_tag">
-                        <h2>{{ book.book_title }}</h2>
-                        <p class="writer">{{ book.book_author }}</p>
-                        <!-- <div class="categories">Thriller, Horror, Romance</div> -->
-                        <p class="book_price text-secondary">₹ {{ book.price }}</p>
-                        <a href="shop/{{book.isbn}}" class="f_btn">Learn More</a>
-                    </div>
+                        <h5 class="card-title" title="{{ book.book_title }}">{{ book.book_title }}</h5>
                     </a>
+                    <p class="card-text">{{ book.book_author }}</p>
+                    <p class="card-text price">₹ {{ book.price }}</p>
                 </div>
-                {% endfor %}
-
+                <div class="card-footer">
+                    <a href="shop/{{book.isbn}}">Learn More</a>
+                </div>
             </div>
-
         </div>
-    </main>
 
-    <style>
-        ul {
-            margin-inline: -35px;
-            list-style: none;
-        }
-    </style>
+        {% endfor %}
+
+    </div>
+</section>
 
 {% endblock %}

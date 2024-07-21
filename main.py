@@ -258,8 +258,7 @@ def search():
             ("%" + searchbook + "%", "%" + searchbook + "%"),
         )
         books = cursor.fetchall()
-    return render_template("shop.html", books=books)
-
+        return render_template("shop.html", books=books)
 
 # Product page
 @app.route("/shop/<isbn>")
