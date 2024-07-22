@@ -4,51 +4,57 @@
 
 {% block content %}
 
+<div class="container ">
+  <div class="row my-5 ">
+    <div class="col-lg-5 bg-white m-auto my-5 px-4 py-5 shadow-sm"
+      style="border: 1px solid #e6e8eb; border-radius: 0.5em;">
 
-<div class="container" style="margin: 20px auto;">
-  <div class="row mt-4">
-    <div class="col-lg-4 bg-white m-auto rounded-top wrapper">
-      <h2 class="text-center pt-3">Sign Up</h2>
+      <h2 class="text-center">Sign Up</h2>
       <p class="text-center text-muted lead">Create new account</p>
 
-      <!-- Form begins -->
-      {% from "includes/_formhelpers.html" import render_field %}
-      <form action="{{ url_for('signup') }}" method="post" class="py-3" autocomplete="off">
+      <form action="{{ url_for('signup') }}" method="post" class="mt-4" autocomplete="off">
         <div class="input-group mb-3">
-          <span class="input-group-text"><i class="fa fa-user"></i></span>
-          <input type="text" name="fname" class="form-control" placeholder="First Name" autocapitalize="on" autofocus required>
-        </div>
-        <div class="input-group mb-3">
-          <span class="input-group-text"><i class="fa fa-user"></i></span>
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-user"></i></span>
+          </div>
+          <input type="text" name="fname" class="form-control" placeholder="First Name" autocapitalize="on" autofocus
+            required>
           <input type="text" name="lname" class="form-control" placeholder="Last Name" autocapitalize="on" required>
         </div>
+
         <div class="input-group mb-3">
-          <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+          </div>
           <input type="email" name="email" class="form-control" placeholder="Email" required>
         </div>
+
         <div class="input-group mb-3">
-          <span class="input-group-text"><i class="fa fa-lock"></i></span>
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-lock"></i></span>
+          </div>
           <input type="password" name="password" class="form-control" placeholder="Password" required>
         </div>
+
         <div class="input-group mb-3">
-          <span class="input-group-text"><i class="fa fa-lock"></i></span>
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-lock"></i></span>
+          </div>
           <input type="password" name="confirm" class="form-control" placeholder="Confirm Password" required>
         </div>
-        <div class="msg" style="margin: .5em 0;text-align: center; color: red;">{{ msg }}</div>
 
+        <div class="msg mb-3 text-center text-danger">{{ msg }}</div>
 
-        <div class="d-grid gap-2">
-          <button type="submit" class="btn btn-lg btn-success btn-block">Sign Up</button>
-          <p class="text-center text-muted mt-2">
-            When you register by clicking Sign Up button, you agree to our <a href="#">Terms and Conditions</a> and <a
-              href="#">Privacy Policy</a>
-          </p>
-          <p class="text-center" style="color: rgb(46, 43, 43);">
-            Already have an account? <a href="{{ url_for('login') }}"> Login Here</a>
-          </p>
-        </div>
+        <button type="submit" class="btn btn-lg button btn-block mb-3">Sign Up</button>
+
+        <p class="text-center text-muted mt-2">
+          When you register by clicking Sign Up button, you agree to our
+          <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>
+        </p>
+        <p class="text-center text-muted mb-0">
+          Already have an account? <a href="{{ url_for('login') }}"> Login Here</a>
+        </p>
       </form>
-
     </div>
   </div>
 </div>

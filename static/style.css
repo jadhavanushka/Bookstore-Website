@@ -11,9 +11,9 @@
 }
 
 :root {
-  --primary-color: #00868a;
+  --primary-color: #089da1;
   --secondary-color: #28a745;
-  --tertiary-color: #007e6e;
+  --tertiary-color: #007d81;
   --font-family: 'Quicksand', 'Arial, sans-serif';
 }
 
@@ -63,11 +63,35 @@ a:hover {
   color: #000;
 }
 
+form a {
+  text-decoration: none;
+  color: var(--tertiary-color);
+  font-weight: 500;
+}
+
+form a:hover {
+  text-decoration: underline;
+  color: var(--tertiary-color);
+}
+
+button {
+  font-weight: 500 !important;
+}
+
+.button {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.button:hover {
+  background-color: var(--tertiary-color);
+  color: #fff;
+}
+
 .search-btn,
 .explore-btn {
   color: var(--tertiary-color);
   border: 1px solid #ced4da;
-  font-weight: 500;
   background: #fff;
 }
 
