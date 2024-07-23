@@ -24,15 +24,12 @@
         {% include 'includes/_messages.html' %}
         {% block content %}{% endblock %}
     </div>
+
     
-    <div class="global-overlay"></div>
-
-
     {% include 'includes/_footer.html' %}
 
 
     <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-    <script src="{{ url_for('static', filename = 'vendor.js') }}"></script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -46,17 +43,6 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
     <script>"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"</script>
-
-    <!-- HTMX - for dynamic content loading -->
-    <script src="https://unpkg.com/htmx.org@1.1.0"></script>
-
-    <!-- Custom Script for CSRF. Used for handling CSRF tokens with HTMX -->
-    <script>
-        document.body.addEventListener('htmx:configRequest', (event) => {
-            event.detail.headers['X-CSRFToken'] = 'fBKpAFUxEVV6T4wZ7mflPltWP6DgeYHbgudWpYZdNJvw62A7K8fzovT5RzAcfL6j';
-        })
-    </script>
-
 </body>
 
 </html>
