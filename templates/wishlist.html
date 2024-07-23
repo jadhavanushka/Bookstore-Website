@@ -3,397 +3,95 @@
 {% block title %}Wishlist{% endblock %}
 
 {% block content %}
-<div class="wrapper">
-<div class="main-content-wrapper">
-        <div class="page-content-inner pt-md-40 pb-md-60" style="padding: 40px 0">
-            {% if wishlist_books %}
-            <h1 style="margin:0 0 20px 0; text-align: center;">Your wishlist</h1>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mb-md-50">
-                        <div class="row g-0">
-                            <div class="col-12">
-                                <div class="table-content table-responsive">
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <table class="table text-center">
-                                        <thead>
-                                            <!-- <tr>
-                                                <th>Product Image</th>
-                                                <th class="text-start">Product</th>
-                                                <th>Price</th>
-                                                <th>Add to cart</th>
-                                                <th>&nbsp</th>
-                                            </tr> -->
-                                        </thead>
-                                        <tbody>
-                                            {% for book in wishlist_books %}
-                                            <tr>
+<div class="container mb-5 py-5" style="min-height: 80vh;">
+    {% if wishlist_books %}
+    <h2 class="text-center">Your wishlist</h2>
+    <div class="row py-4">
+        <div class="col-lg-8">
+            <div class="row g-0">
+                <div class="col-12">
+                    <div class="table-content table-responsive">
+                        <table class="table">
+                            <!-- <thead>
+                                <tr>
+                                <th>Product Image</th>
+                                <th class="text-start">Product</th>
+                                <th>Price</th>
+                                <th>Add to cart</th>
+                                <th>&nbsp</th>
+                                </tr>
+                            </thead> -->
+                            <tbody>
+                                {% for book in wishlist_books %}
+                                <tr>
+                                    <td class="product-thumbnail text-center">
+                                        <img src="{{  book.Image_URL_L  }}" alt="{{ book.Book_Title }}">
+                                    </td>
 
-                                                <td class="product-thumbnail text-start">
-                                                    <img src="{{  book.Image_URL_L  }}" alt="Product Thumbnail">
-                                                </td>
-                                                <td class="product-name text-start wide-column">
-                                                    <h3 style="font-size: 20px; text-align: left;">
-                                                        <a href="/showparticularproducts/6">
-                                                            {{ book.Book_Title }}
-                                                        </a>
-                                                    </h3>
-                                                    <h4 style="font-size: 16px; text-align: left; color:#919191;">
-                                                        {{ book.Book_Author }}
+                                    <td class="product-name text-start wide-column">
+                                        <h5 class="m-0">
+                                            <a href="/shop/{{  book.isbn  }}">
+                                                {{ book.Book_Title }}
+                                            </a>
+                                        </h5>
+                                        <p class="text-muted">
+                                            {{ book.Book_Author }}
+                                        </p>
+                                    </td>
 
-                                                    </h4>
-                                                </td>
-                                                <td class="product-price">
-                                                    <span class="product-price-wrapper">
-                                                        <span class="money">
-                                                            ₹ {{ book.Price }}
-                                                        </span>
-                                                    </span>
-                                                </td>
-                                                <td class="product-price">
-                                                    <span class="product-price-wrapper">
-                                                        <form method="post" action="/addtocart"
-                                                            style="display: inline-block;">
-                                                            <input type="hidden" name="isbn" value="{{ book.isbn }}" />
-                                                            <input type="hidden" name="quantity" value="1" />
-                                                            <button type="submit" class="add-to-cart"
-                                                                style="border: none; padding: 8px 15px; width: 150px; color: #ffffff; background-color: #089da1; border-radius:5px ;"><i
-                                                                    class="fa fa-plus"></i>
-                                                                <span>Add to Cart</span></button>
-                                                        </form>
-                                                    </span>
-                                                </td>
-                                                <td class="text-start">
-                                                    <form method="post" action="/deletefromwishlist">
-                                                        <input type="hidden" name="isbn" value="{{ book.isbn }}" />
-                                                        <button type="submit" style="border: none; background: none;">
-                                                            <i class="fa fa-remove" style="color:#292323;"
-                                                                title="Delete"></i></button>
-                                                    </form>
-                                                </td>
+                                    <td class="product-price">
+                                        ₹ {{ book.Price }}
+                                    </td>
 
-                                            </tr>
-                                            {% endfor %}
+                                    <td class="text-center">
+                                        <form method="post" action="/addtocart">
+                                            <input type="hidden" name="isbn" value="{{ book.isbn }}" />
+                                            <input type="hidden" name="quantity" value="1" />
+                                            <button type="submit" class="button btn">
+                                                <i class="fa fa-plus mr-1"></i>
+                                                Add to cart</button>
+                                        </form>
+                                    </td>
 
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                                    <td class="text-start del-btn">
+                                        <form method="post" action="/deletefromwishlist">
+                                            <input type="hidden" name="isbn" value="{{ book.isbn }}" />
+                                            <button type="submit" class="btn">
+                                                <i class="fa fa-remove" title="Delete"></i></button>
+                                        </form>
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="cart-collaterals">
-                            <div class="cart-totals">
-                                <!-- <h5 class="font-size-14 font-bold" style="font-size: 14px; margin-bottom: 15px;">Cart totals</h5> -->
-
-                            </div>
-                            <a href="{{ url_for('cart') }}" class="btn btn-size-md btn-shape-square btn-fullwidth"
-                                style="color: #fff;">Go to cart</a>
-                        </div>
-                    </div>
-
-
-                    {% else %}
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="table-content table-responsive">
-                                    <div class="text-center m-4">
-                                        <h1>Your wishlist is empty</h1>
-                                        <a href="{{ url_for('home') }}">
-                                            <button class="btn btn-size-md mt-2">Back to Home</button>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
                 </div>
-
-
             </div>
         </div>
+
+        <div class="col-lg-4 mt-4 px-4 px-lg-0">
+            <a href="{{ url_for('cart') }}">
+                <button class="btn w-100 button" style="padding: 1em;">
+                    Go to cart</button>
+            </a>
+        </div>
+
+        {% else %}
+        <div class="container p-5">
+            <div class="my-5 p-5">
+                <div class="text-center m-auto p-5 shadow-sm"
+                    style="width: fit-content; border: 1px solid #e6e8eb; border-radius: 0.5em;">
+                    <h3 class="text-muted">Your wishlist is empty</h3>
+                    <a href="{{ url_for('home') }}">
+                        <button class="btn mt-2 btn-lg px-4 button">Back to Home</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
+</div>
 
-
-
-
-    <script type="text/javascript">
-        $('.show_confirm').click(function (event) {
-            var form = $(this).closest("form");
-            var name = $(this).data("name");
-            event.preventDefault();
-            swal({
-                title: `Are you sure you want to Remove Product From Cart?`,
-                text: "If you remove this, You can add once again to cart.",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        form.submit();
-                    }
-                });
-        });
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        var csrftoken = getCookie('csrftoken');
-        function add(id) {
-            sendData();
-            function sendData() {
-                fetch('/cart/add_cart_ajax/', {
-                    method: "POST",
-                    headers: {
-                        "Content-type": "application/jason",
-                        "X-CSRFToken": csrftoken,
-                    },
-                    body: JSON.stringify({
-
-                        id: id,
-
-
-                    }),
-                })
-                    .then(response => response.json())
-                    .then((data) => {
-                        document.getElementById(id).value = data.quantity;
-                        document.getElementById('a' + data.id).innerHTML = '₹' + data.producttotal;
-                        document.getElementById('subtotal').innerHTML = '₹' + data.Total;
-                        document.getElementById('Tax').innerHTML = '₹' + data.Tax;
-                        document.getElementById('Alltotal').innerHTML = '₹' + data.Alltotal;
-
-
-                    });
-            }
-
-            // Replace the above to show a success message within this page, e.g.
-            // const element = document.getElementById('paypal-button-container');
-            // element.innerHTML = '';
-            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
-            // Or go to another URL:  actions.redirect('thank_you.html');
-
-        }
-        function minus(id) {
-            minusData();
-            function minusData() {
-                fetch('/cart/minus_cart_ajax/', {
-                    method: "POST",
-                    headers: {
-                        "Content-type": "application/jason",
-                        "X-CSRFToken": csrftoken,
-                    },
-                    body: JSON.stringify({
-
-                        id: id,
-
-
-                    }),
-                })
-                    .then(response => response.json())
-                    .then((data) => {
-                        document.getElementById(id).value = data.quantity;
-                        document.getElementById('a' + data.id).innerHTML = '₹' + data.producttotal;
-                        document.getElementById('subtotal').innerHTML = '₹' + data.Total;
-                        document.getElementById('Tax').innerHTML = '₹' + data.Tax;
-                        document.getElementById('Alltotal').innerHTML = '₹' + data.Alltotal;
-
-
-                    });
-            }
-
-            // Replace the above to show a success message within this page, e.g.
-            // const element = document.getElementById('paypal-button-container');
-            // element.innerHTML = '';
-            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
-            // Or go to another URL:  actions.redirect('thank_you.html');
-
-        }
-
-    </script>
-
-
-
-    <style>
-        .nav .navbar-expand-lg .navbar-collapse {
-            display: -ms-flexbox !important;
-            display: flex !important;
-            -ms-flex-preferred-size: auto;
-            flex-basis: auto;
-            /* margin-top: -78px; */
-            margin-left: 80px;
-            display: inline-flex;
-        }
-
-        .btn-fullwidth {
-            display: block;
-            width: 100%;
-        }
-
-        .btn-size-md {
-            padding: 16px 30px;
-        }
-
-        .btn {
-            color: #ffffff;
-            background-color: #089da1;
-            padding: 20px 40px;
-        }
-
-        .social__link,
-        .btn-close,
-        .comment-author a,
-        .comment-content p,
-        .nice-select:after,
-        .cart-form__input,
-        .cart-form__btn,
-        .mini-cart,
-        .mini-cart__product-remove,
-        .mini-cart__product-title,
-        .product-summary .product-title a,
-        .product-summary .product-price-wrapper span,
-        .variation-form .product-size-variations .product-size-variation-btn,
-        .variation-form .reset_variations,
-        .table tbody td.product-name h3 a,
-        .table.compare-table tbody th,
-        .group-product-table tbody td.product-name h3,
-        .group-product-table tbody td.product-price .product-price-wrapper>span.product-price-old,
-        .widget-list li a strong,
-        .tagcloud a,
-        .payment-label,
-        .product-reviews .review__author {
-            color: #292323;
-        }
-
-        .cart-calculator__item--head {
-            -webkit-flex-basis: 90px;
-            -moz-flex-basis: 90px;
-            -ms-flex-preferred-size: 90px;
-            flex-basis: 90px;
-            max-width: 90px;
-            font-weight: 700;
-        }
-
-        .cart-calculator__item--head,
-        .cart-calculator__item--value {
-            padding-top: 5px;
-            padding-bottom: 15px;
-            vertical-align: top;
-            text-transform: capitalize;
-            letter-spacing: 0;
-        }
-
-        .two-column-list,
-        .message-box,
-        .related-post__inner,
-        .searchform--2 .searchform,
-        .mini-cart__product,
-        .offcanvas-navigation,
-        .ft-product-list .product-inner,
-        .user-dashboard-tab,
-        .cart-calculator__item,
-        .product-gallery.vertical-slide-nav,
-        .product-reviews .review__container {
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: -moz-flex;
-            display: -ms-flexbox;
-            display: flex;
-        }
-
-
-        .text-center {
-            text-align: center !important;
-        }
-
-        .row {
-            --bs-gutter-x: 30px;
-            --bs-gutter-y: 0;
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: calc(var(--bs-gutter-y) * -1);
-            margin-right: calc(var(--bs-gutter-x) * -.5);
-            margin-left: calc(var(--bs-gutter-x) * -.5);
-        }
-
-        body {
-            font-weight: 400;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        .table tbody td.product-thumbnail {
-            width: 90px !important;
-            min-width: 90px !important;
-        }
-
-        .table th.wide-column,
-        .table td.wide-column {
-            min-width: 240px;
-        }
-
-        .table tbody td {
-            padding: 15px 0;
-        }
-
-        .table th,
-        .table td {
-            min-width: 100px;
-        }
-
-        .table td {
-            vertical-align: middle;
-            border: 0px solid #e5e5e5;
-        }
-
-        .table tr {
-            border: 1px 0px 1px 0px solid #e5e5e5
-        }
-
-        img {
-            width: 50%;
-        }
-    </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    {% endblock %}
+{% endblock %}
