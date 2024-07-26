@@ -62,10 +62,12 @@ a:hover {
   color: #000;
 }
 
-form a {
+form a,
+.show-more-btn {
   text-decoration: none;
   color: var(--tertiary-color);
-  font-weight: 500;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 form a:hover {
@@ -98,6 +100,10 @@ button {
 .explore-btn:hover {
   color: var(--tertiary-color);
   background: #e4ebeb;
+}
+
+.nav-link {
+  font-weight: 500;
 }
 
 .hero {
@@ -230,6 +236,30 @@ button {
   background: #eeeeee;
 }
 
+.book-rating i {
+  font-size: 20px;
+  margin-right: 4px;
+}
+
+.book-rating .fa-star.filled,
+.book-rating .fa-star-half-alt.filled {
+  color: #ffc107 !important;
+}
+
+.book-rating .fa-star:not(.fa-star-half-alt) {
+  color: #ccc;
+}
+
+.description {
+  max-height: 125px;
+  overflow: hidden;
+}
+
+.description.expanded {
+  max-height: none;
+}
+
+
 .flash-overlay {
   position: fixed;
   top: 100px;
@@ -248,6 +278,14 @@ button {
   .hero .flex-column {
     width: 75% !important;
   }
+
+  .product-page .book-cover {
+    width: 50% !important;
+  }
+
+  .product-page .col-lg-4 div {
+    margin-bottom: 0 !important;
+  }
 }
 
 /* Small devices (landscape phones, less than 768px) */
@@ -256,9 +294,26 @@ button {
     font-size: 32px !important;
   }
 
+  h2 {
+    font-size: 24px !important;
+  }
+
+  h3 {
+    font-size: 20px !important;
+  }
+
+  h4 {
+    font-size: 18px !important;
+  }
+
   p,
   h5 {
     font-size: 16px !important;
+  }
+
+  footer a{
+    font-size: 1em !important;
+    margin-right: 0 !important;
   }
 
   .hero .flex-column,
@@ -309,5 +364,14 @@ button {
 
   .table img {
     width: 70% !important;
+  }
+
+  .product-page .lead {
+    font-size: 1.5em !important;
+  }
+
+  .book-rating i {
+    font-size: 1em;
+    margin-right: 2px;
   }
 }

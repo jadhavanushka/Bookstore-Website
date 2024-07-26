@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from functools import wraps
 import MySQLdb.cursors
 import re
+from utils import get_book_description, get_recommendations
 
 app = Flask(__name__)
 
@@ -28,7 +29,7 @@ def home():
     new = cursor.fetchall()
 
     cursor.execute(
-        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by ratings desc limit 8"
+        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by ratings desc, Year_of_Publication desc limit 8"
     )
     featured = cursor.fetchall()
 
@@ -65,14 +66,14 @@ def signup():
         cursor.execute("SELECT * FROM users WHERE user_email = %s", [email])
         account = cursor.fetchone()
 
-        # If account exists show error 
+        # If account exists show error
         if account:
-            msg="Account already exists"   
+            msg = "Account already exists"
         # validation checks
         elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-            msg="Invalid email address"
+            msg = "Invalid email address"
         elif not password == confirm:
-            msg="Passwords do not match"
+            msg = "Passwords do not match"
         # Account doesnt exists and the form data is valid, insert new account into users table
         else:
             cursor.execute(
@@ -92,16 +93,16 @@ def signup():
                 session["loggedin"] = True
                 session["id"] = account["user_id"]
                 session["email"] = email
-                
+
                 flash("New account created!", "success")
-                
+
                 # Redirect to home page
                 return redirect(url_for("home"))
 
     elif request.method == "POST":
         # Form is empty... (no POST data)
-        msg="Please fill all the fields"
-        
+        msg = "Please fill all the fields"
+
     # Show registration form with message (if any)
     return render_template("signup.html", msg=msg)
 
@@ -134,19 +135,19 @@ def login():
                 session["loggedin"] = True
                 session["id"] = account["user_id"]
                 session["email"] = account["user_email"]
-                
+
                 flash("Logged in.", "success")
-                
+
                 # Redirect to home page
                 return redirect(url_for("home"))
 
             else:
-                msg="Incorrect password"
+                msg = "Incorrect password"
                 return render_template("login.html", msg=msg)
 
         else:
             # Account doesnt exist email is incorrect
-            msg="Cannot find the account. Incorrect email"
+            msg = "Cannot find the account. Incorrect email"
 
     return render_template("login.html", msg=msg)
 
@@ -172,9 +173,9 @@ def logout():
     session.pop("loggedin", None)
     session.pop("id", None)
     session.pop("email", None)
-    
+
     flash("Logged out.", "success")
-    
+
     # Redirect to login page
     return redirect(url_for("home"))
 
@@ -196,7 +197,7 @@ def profile():
 def shop():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by Year_of_Publication desc limit 30 "
+        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by Year_of_Publication desc limit 30"
     )
 
     books = cursor.fetchall()
@@ -260,15 +261,19 @@ def search():
         books = cursor.fetchall()
         return render_template("shop.html", books=books)
 
+
 # Product page
 @app.route("/shop/<isbn>")
 def productpage(isbn):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT isbn, book_title, book_author, price, Image_URL_L, year_of_publication FROM books_data WHERE isbn = %s",
+        "SELECT isbn, book_title, book_author, ratings, num_ratings, price, Image_URL_L, year_of_publication, publisher FROM books_data WHERE isbn = %s",
         [isbn],
     )
     book = cursor.fetchone()
+
+    description = get_book_description(isbn)
+
     wishlist = {}
     if "loggedin" in session:
         cursor.execute(
@@ -278,13 +283,15 @@ def productpage(isbn):
         # Fetch one record and return result
         wishlist = cursor.fetchone()
 
-    cursor.execute(
-        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data where Year_of_Publication=%s limit 8 ",
-        [book["year_of_publication"]],
-    )
-    more = cursor.fetchall()
+    more = get_recommendations(cursor,book)
 
-    return render_template("productpage.html", book=book, wishlist=wishlist, more=more)
+    return render_template(
+        "productpage.html",
+        book=book,
+        wishlist=wishlist,
+        more=more,
+        description=description,
+    )
 
 
 # Wishlist page
@@ -347,7 +354,7 @@ def deletefromwishlist():
 def addtocart():
     quantity = int(request.form["quantity"])
     isbn = request.form["isbn"]
-    
+
     if quantity and isbn and request.method == "POST":
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute(
@@ -355,7 +362,7 @@ def addtocart():
             [isbn],
         )
         # Fetch one record and return result
-        book = cursor.fetchone()    
+        book = cursor.fetchone()
         cursor.execute(
             "SELECT isbn FROM cart where isbn=%s and user_id=%s",
             (isbn, session["id"]),
@@ -373,7 +380,7 @@ def addtocart():
                 "INSERT INTO cart VALUES (%s, %s, %s, %s)",
                 (session["id"], isbn, quantity, book["price"]),
             )
-            mysql.connection.commit()   
+            mysql.connection.commit()
     return redirect(url_for("shop"))
 
 
@@ -416,7 +423,8 @@ def inc_quantity():
         stock = cursor.fetchone()
         stock = stock["stock"]
 
-        if stock > cart_book["book_count"] + 1:
+        # if stock > cart_book["book_count"] + 1:
+        if stock or not stock:
             cursor.execute(
                 "UPDATE cart set book_count=book_count+1 where isbn=%s and user_id=%s",
                 (isbn, session["id"]),
