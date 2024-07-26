@@ -48,7 +48,7 @@
                                             <input type="hidden" name="isbn" value="{{ book.isbn }}" />
                                             <input type="hidden" name="quantity" value="1" />
                                             <button type="submit" class="button btn">
-                                                <i class="fa fa-plus mr-1"></i>
+                                                <!-- <i class="fa fa-plus mr-1"></i> -->
                                                 Add to cart</button>
                                         </form>
                                     </td>
@@ -73,7 +73,7 @@
 
         <div class="col-lg-4 mt-4 px-4 px-lg-0">
             <a href="{{ url_for('cart') }}">
-                <button class="btn w-100 button" style="padding: 1em;">
+                <button class="btn w-100 button btn-lg" style="padding: 0.75em;">
                     Go to cart</button>
             </a>
         </div>
