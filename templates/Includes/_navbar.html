@@ -42,10 +42,10 @@
 
             {% endif%}
         </ul>
-        <form class="form-inline my-2 my-lg-0" method="post" action="/shop/search">
-            <input class="form-control mr-sm-2" type="search" name="searchbook" placeholder="Search..."
-                id="searchField" autocomplete="off" value="" required>
-            <button class="btn my-2 my-sm-0 search-btn" type="submit"><i class="fa fa-search"></i></button>
+        <form class="form-inline my-2 my-lg-0" action="{{ url_for('shop') }}" method="get">
+            <input class="form-control mr-sm-2" type="search" name="q" placeholder="Search..." id="searchField"
+                autocomplete="off" value="{{ search_query }}">
+         <button class="btn my-2 my-sm-0 search-btn" type="submit"><i class="fa fa-search"></i></button>
         </form>
     </div>
 </nav>

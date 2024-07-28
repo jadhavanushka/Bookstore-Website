@@ -133,8 +133,8 @@ button {
   height: 100%;
 }
 
-.featured-books .card:hover {
-  box-shadow: #00000020 2px 2px 4px;
+.card:hover {
+  box-shadow: #00000020 0px 2px 4px;
 }
 
 .featured-books .card img {
@@ -144,20 +144,15 @@ button {
   margin-top: 1em;
 }
 
-.featured-books .card .card-title,
+.card .card-title,
 .card p {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.featured-books .card .price {
-  font-weight: 600;
-}
-
-.featured-books .card .card-footer:hover {
-  background: #00000010;
-  cursor: pointer;
+.card .price {
+  font-weight: 500;
 }
 
 .table tbody td.product-thumbnail {
@@ -259,6 +254,40 @@ button {
   max-height: none;
 }
 
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5em;
+}
+
+.products .products-card {
+  width: 30%;
+}
+
+.products img {
+  width: 100%;
+  padding: 16px 16px 0;
+  object-fit: contain;
+  aspect-ratio: 1;
+}
+
+.products .card-body {
+  padding: 16px 10px;
+}
+
+.page-item.active .page-link {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.page-item .page-link {
+  color: var(--tertiary-color);
+}
+
+.filters {
+  gap: 1em;
+}
+
 
 .flash-overlay {
   position: fixed;
@@ -311,7 +340,7 @@ button {
     font-size: 16px !important;
   }
 
-  footer a{
+  footer a {
     font-size: 1em !important;
     margin-right: 0 !important;
   }
@@ -331,7 +360,7 @@ button {
   }
 
   .featured-books .card {
-    width: 160px;
+    width: 200px;
     height: 100%;
   }
 
@@ -374,4 +403,17 @@ button {
     font-size: 1em;
     margin-right: 2px;
   }
+
+  .products {
+    gap: 1em;
+  }
+
+  .products .products-card {
+    width: 47%;
+  }
+
+  .filters {
+    gap: 0.75em;
+  }
+
 }

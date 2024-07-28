@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 from functools import wraps
 import MySQLdb.cursors
 import re
-from utils import get_book_description, get_recommendations
+from utils import get_book_description, get_recommendations, get_books_query, isInWishlist
 
 app = Flask(__name__)
 
@@ -38,6 +38,11 @@ def home():
     )
     classic = cursor.fetchall()
 
+    if "loggedin" in session:
+        new = isInWishlist(cursor, session["id"], new)
+        featured = isInWishlist(cursor, session["id"], featured)
+        classic = isInWishlist(cursor, session["id"], classic)
+      
     return render_template("home.html", new=new, classic=classic, featured=featured)
 
 
@@ -196,70 +201,62 @@ def profile():
 @app.route("/shop")
 def shop():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute(
-        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by Year_of_Publication desc limit 30"
-    )
 
+    # Get filter and sort parameters
+    min_price = request.args.get("min_price", 0, type=int)
+    max_price = request.args.get("max_price", 1000, type=int)
+    rating = request.args.get("rating", 0, type=int)
+    sort = request.args.get("sort", "latest")
+    query = request.args.get("q", "", type=str)
+
+    # Base query for filtering
+    if query:
+        base_query = """
+            FROM books_data
+            WHERE (book_title LIKE %s OR book_author LIKE %s)
+            AND price BETWEEN %s AND %s AND ratings >= %s
+        """
+        search_term = f"%{query}%"
+        params = [search_term, search_term, min_price, max_price, rating]
+    else:
+        base_query = """
+            FROM books_data
+            WHERE price BETWEEN %s AND %s AND ratings >= %s
+        """
+        params = [min_price, max_price, rating]
+
+    # Count total books for pagination
+    count_query = "SELECT COUNT(*) " + base_query
+    cursor.execute(count_query, params)
+    total_books = cursor.fetchone()["COUNT(*)"]
+
+    # Calculate total pages
+    per_page = 30
+    total_pages = (total_books + per_page - 1) // per_page
+
+    # Limit and offset for pagination
+    page = request.args.get("page", 1, type=int)
+    offset = (page - 1) * per_page
+
+    # Get books
+    query_string, params = get_books_query(base_query, params, sort, per_page, offset)
+    cursor.execute(query_string, params)
     books = cursor.fetchall()
 
     if "loggedin" in session:
-        cursor.execute(
-            "select isbn from wishlist natural left outer join books_data where user_id=%s",
-            [session["id"]],
-        )
-        wishlist = cursor.fetchall()
-        if wishlist:
-            for book in books:
-                if book["isbn"] in wishlist:
-                    book["wish"] = True
-                else:
-                    book["wish"] = False
+        books = isInWishlist(cursor, session["id"], books)
 
-    return render_template("shop.html", books=books)
-
-
-# Filter books by price
-@app.route("/shop/filterbyprice", methods=["POST"])
-def filterbyprice():
-    FilterPrice = int(request.form["FilterPrice"])
-    if FilterPrice and request.method == "POST":
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute(
-            "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data where price<=%s order by Year_of_Publication desc limit 30 ",
-            [FilterPrice],
-        )
-        books = cursor.fetchall()
-
-    return render_template("shop.html", books=books)
-
-
-# Filter books by rating
-@app.route("/shop/filterbyrating", methods=["POST"])
-def filterbyrating():
-    rating = int(request.form["rating"])
-    if rating and request.method == "POST":
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute(
-            "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data where ratings>=%s order by Year_of_Publication desc limit 30 ",
-            [rating],
-        )
-        books = cursor.fetchall()
-
-    return render_template("shop.html", books=books)
-
-
-# Search a book
-@app.route("/shop/search", methods=["POST"])
-def search():
-    searchbook = request.form["searchbook"]
-    if searchbook and request.method == "POST":
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute(
-            "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data where Book_Title like %s or Book_Author like %s order by Year_of_Publication desc limit 30 ",
-            ("%" + searchbook + "%", "%" + searchbook + "%"),
-        )
-        books = cursor.fetchall()
-        return render_template("shop.html", books=books)
+    return render_template(
+        "shop.html",
+        books=books,
+        total_pages=total_pages,
+        page=page,
+        min_price=min_price,
+        max_price=max_price,
+        rating=rating,
+        sort=sort,
+        search_query=query
+    )
 
 
 # Product page
@@ -283,7 +280,7 @@ def productpage(isbn):
         # Fetch one record and return result
         wishlist = cursor.fetchone()
 
-    more = get_recommendations(cursor,book)
+    more = get_recommendations(cursor, book)
 
     return render_template(
         "productpage.html",
