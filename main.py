@@ -3,7 +3,12 @@ from flask_mysqldb import MySQL
 from functools import wraps
 import MySQLdb.cursors
 import re
-from utils import get_book_description, get_recommendations, get_books_query, isInWishlist
+from utils import (
+    get_book_description,
+    get_recommendations,
+    get_books_query,
+    isInWishlist,
+)
 
 app = Flask(__name__)
 
@@ -42,7 +47,7 @@ def home():
         new = isInWishlist(cursor, session["id"], new)
         featured = isInWishlist(cursor, session["id"], featured)
         classic = isInWishlist(cursor, session["id"], classic)
-      
+
     return render_template("home.html", new=new, classic=classic, featured=featured)
 
 
@@ -255,7 +260,7 @@ def shop():
         max_price=max_price,
         rating=rating,
         sort=sort,
-        search_query=query
+        search_query=query,
     )
 
 
@@ -389,14 +394,10 @@ def cart():
         "select * from cart natural left outer join books_data where user_id=%s",
         [session["id"]],
     )
-    # Fetch one record and return result
     cart_books = cursor.fetchall()
 
-    cursor.execute(
-        "select sum(price*book_count)as cart_total from cart natural left outer join books_data where user_id=%s",
-        [session["id"]],
-    )
-    cart_total = cursor.fetchone()
+    cart_total = sum(item["price"] * item["book_count"] for item in cart_books)
+
     return render_template("cart.html", cart_books=cart_books, cart_total=cart_total)
 
 
@@ -414,19 +415,10 @@ def inc_quantity():
         cart_book = cursor.fetchone()
 
         cursor.execute(
-            "select sum(book_count) as stock from stock where isbn=%s", [isbn]
+            "UPDATE cart set book_count=book_count+1 where isbn=%s and user_id=%s",
+            (isbn, session["id"]),
         )
-        # Fetch one record and return result
-        stock = cursor.fetchone()
-        stock = stock["stock"]
-
-        # if stock > cart_book["book_count"] + 1:
-        if stock or not stock:
-            cursor.execute(
-                "UPDATE cart set book_count=book_count+1 where isbn=%s and user_id=%s",
-                (isbn, session["id"]),
-            )
-            mysql.connection.commit()
+        mysql.connection.commit()
 
     return redirect(url_for("cart"))
 
@@ -476,19 +468,10 @@ def set_quantity():
         cart_book = cursor.fetchone()
 
         cursor.execute(
-            "select sum(book_count) as stock from stock where isbn=%s", [isbn]
+            "UPDATE cart set book_count=%s where isbn=%s and user_id=%s",
+            (quantity, isbn, session["id"]),
         )
-        # Fetch one record and return result
-        stock = cursor.fetchone()
-        stock = stock["stock"]
-
-        if stock > int(quantity):
-
-            cursor.execute(
-                "UPDATE cart set book_count=%s where isbn=%s and user_id=%s",
-                (quantity, isbn, session["id"]),
-            )
-            mysql.connection.commit()
+        mysql.connection.commit()
 
     return redirect(url_for("cart"))
 
@@ -505,61 +488,120 @@ def deletefromcart():
         return redirect(url_for("cart"))
 
 
-@app.route("/payment", methods=["POST", "GET"])
+# checkout page
+@app.route("/checkout", methods=["GET", "POST"])
 @is_logged_in
-def payment():
+def checkout():
+    user_id = session["id"]
+
+    # Fetch existing addresses
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM Addresses WHERE user_id = %s", [user_id])
+    addresses = cursor.fetchall()
+
+    # Fetch cart items
     cursor.execute(
-        "select * from cart natural left outer join books_data where user_id=%s",
+        "select isbn, Book_Title, price, book_count from cart natural left outer join books_data where user_id=%s",
         [session["id"]],
     )
-    # Fetch one record and return result
-    cart_books = cursor.fetchall()
-    total_items = len(cart_books)
+    cart_items = cursor.fetchall()
 
-    cursor.execute(
-        "select sum(price*book_count)as cart_total from cart natural left outer join books_data where user_id=%s",
-        [session["id"]],
-    )
-    cart_total = cursor.fetchone()
+    # Calculate total price
+    total_price = sum(item["price"] * item["book_count"] for item in cart_items)
 
-    cursor.execute(
-        "select sum(price*book_count)as cart_total from cart natural left outer join books_data where user_id=%s",
-        [session["id"]],
-    )
-    cart_total = cursor.fetchone()
-    cart_total = cart_total["cart_total"]
+    if request.method == "POST":
+        name = request.form.get("name")
+        phone = request.form.get("phone")
+        address_id = request.form.get("address_id")
+        payment_method = request.form.get("payment_method")
 
-    if (
-        request.method == "POST"
-        and "fname" in request.form
-        and "lname" in request.form
-        and "phone" in request.form
-    ):  # and 'address' in request.form and 'city' in request.form and 'zip' in request.form and 'paymentmethod' in request.form:
-        # Create variables for easy access
-        fname = request.form["fname"]
-        lname = request.form["lname"]
-        phone = int(request.form["phone"])
-        # address = request.form['address']
-        # city = request.form['city']
-        # zip = int(request.form['zip'])
-        # payment_method = request.form['paymentMethod']
+        # Insert into Orders table
+        cursor.execute(
+            """
+            INSERT INTO Orders (user_id, name, phone, address_id, total_amount, order_date)
+            VALUES (%s, %s, %s, %s, %s, NOW())
+            """,
+            [user_id, name, phone, address_id, total_price],
+        )
+        order_id = cursor.lastrowid
 
-        # cursor.execute('INSERT INTO orders VALUES (NULL, %s, %s, %s, %s,%s, %s, %s, %s,%s )',
-        #                (session[id], fname, lname, phone, address, city, zip, payment_method, cart_total))
-        # mysql.connection.commit()
+        # Insert order items
+        for item in cart_items:
+            cursor.execute(
+                """
+                INSERT INTO Order_Items (order_id, isbn, quantity, price)
+                VALUES (%s, %s, %s, %s)
+                """,
+                [order_id, item["isbn"], item["book_count"], item["price"]],
+            )
 
-        cursor.execute("DELETE FROM cart where user_id=%s", [session["id"]])
+        # Insert into payments table
+        cursor.execute("""
+            INSERT INTO payments (order_id, payment_date, amount, payment_method, status)
+            VALUES (%s, NOW(), %s, %s, %s)
+            """,
+            [order_id, total_price, payment_method, 'completed'],
+        )
+
+        # Clear the cart
+        cursor.execute("DELETE FROM Cart WHERE user_id = %s", [user_id])
+
         mysql.connection.commit()
-
-        return render_template("orderplaced.html")
+        cursor.close()
+        return redirect(url_for("order_confirmation", order_id=order_id))
 
     return render_template(
-        "paymentpage.html",
-        total_items=total_items,
-        cart_books=cart_books,
-        cart_total=cart_total,
+        "checkout.html",
+        addresses=addresses,
+        cart_items=cart_items,
+        total_price=total_price,
     )
+
+
+@app.route("/order_confirmation/<int:order_id>")
+@is_logged_in
+def order_confirmation(order_id):
+    # Fetch order details for confirmation page
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM Orders WHERE order_id = %s", [order_id])
+    order = cursor.fetchone()
+    cursor.execute(
+        "select * from Order_Items natural left outer join books_data where order_id=%s",
+        [order_id],
+    )
+    order_items = cursor.fetchall()
+    cursor.close()
+
+    return render_template(
+        "order_confirmation.html", order=order, order_items=order_items
+    )
+
+
+@app.route("/add_address", methods=["GET", "POST"])
+@is_logged_in
+def add_address():
+    if request.method == "POST":
+        user_id = session["id"]
+        street = request.form.get("street")
+        city = request.form.get("city")
+        state = request.form.get("state")
+        country = request.form.get("country")
+        pincode = request.form.get("pincode")
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("""
+            INSERT INTO Addresses (user_id, street, city, state, country,  pincode)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (user_id, street, city, state, country, pincode),
+        )
+
+        mysql.connection.commit()
+        cursor.close()
+
+        return redirect(url_for("checkout"))
+
+    return render_template("add_address.html")
 
 
 if __name__ == "__main__":

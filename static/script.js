@@ -37,3 +37,12 @@ function toggleDescription() {
       button.textContent = 'Show less';
   }
 }
+
+// submit forms
+function placeOrder() {
+  document.getElementById('checkout-form').submit();
+}
+
+function submitAddressForm() {
+  document.getElementById('address-form').submit();
+}

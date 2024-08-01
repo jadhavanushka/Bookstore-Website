@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+
+<div class="container mb-5 py-5">
+    <h2 class="text-center">Checkout</h2>
+    <div class="row py-4">
+        <div class="col-lg-7 px-0 mr-lg-5 mt-3">
+            <form method="post" action="{{ url_for('checkout') }}" id="checkout-form">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Select Address:</label>
+                    <select class="form-control mb-2" name="address_id" id="address" required>
+                        {% for address in addresses %}
+                        <option value="{{ address.address_id }}" {% if address.is_primary%}selected{% endif %}>{{
+                            address.street }}, {{ address.city }}, {{ address.state }},
+                            {{ address.pincode }}</option>
+                        {% endfor %}
+                    </select>
+                    <!-- Button trigger modal -->
+                    <a href="{{ url_for('add_address') }}" class="mt-2" style="font-weight: 500;" data-toggle="modal"
+                        data-target="#add_address_modal">Add New Address</a>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="payment_method">Payment Method:</label>
+                    <select class="form-control" name="payment_method" id="payment_method" required>
+                        <option value="cash">Cash on delivery</option>
+                        <option value="credit_card">Credit card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="bank_transfer">Bank transfer</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4 mt-3 p-0">
+            <div style="background: #f5f5f5;">
+                <div class="cart-totals p-4">
+                    <h4 class="text-center mb-4">Order Summary</h4>
+                    <div class="cart-calculator ">
+
+                        {% for item in cart_items %}
+                        <div class="d-flex justify-content-between">
+                            <p class="">{{ item.Book_Title }} ({{ item.book_count }})</p>
+                            <p class="" style="font-weight: 500;">
+                                ₹ {{ item.book_count * item.price }}
+                            </p>
+                        </div>
+                        {% endfor %}
+
+                        <hr class="my-1">
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <p class="">Subtotal</p>
+                            <p class="" id="subtotal" style="font-weight: 500;">
+                                ₹ {{ total_price }}
+                            </p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p class="">Delivery</p>
+                            <p class="" style="font-weight: 500;">
+                                <span style="text-decoration: line-through; color: #777;">₹ 40</span>
+                                <span style="color: var(--tertiary-color);">Free</span>
+                            </p>
+                        </div>
+
+                        <hr class="my-1">
+
+                        <div class="d-flex justify-content-between mt-4" style="font-size: 20px; font-weight: 600;">
+                            <p class="mb-0">Total</p>
+                            <p class="mb-0" id="total">
+                                ₹ {{ total_price }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn w-100 button btn-lg" style="padding: 0.75em;" onclick="placeOrder()">
+                    Place order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+{% include 'includes/_addressmodal.html' %}
+
+{% endblock %}
