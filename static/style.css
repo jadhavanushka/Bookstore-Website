@@ -63,14 +63,17 @@ a:hover {
 }
 
 form a,
-.show-more-btn {
+.show-more-btn,
+.order-details {
   text-decoration: none;
   color: var(--tertiary-color);
   font-weight: 600;
   cursor: pointer;
 }
 
-form a:hover {
+form a:hover,
+.show-more-btn:hover,
+.order-details:hover {
   text-decoration: underline;
   color: var(--tertiary-color);
 }
@@ -184,6 +187,11 @@ button {
   min-width: 40px !important;
 }
 
+.table tr:hover {
+  background-color: #f8f8f8;
+  ;
+}
+
 .table img {
   width: 50%;
 }
@@ -288,6 +296,20 @@ button {
   gap: 1em;
 }
 
+#list-tab a {
+  background-color: #f5f5f5;
+  display: flex;
+  min-width:125px;
+}
+
+#list-tab .active {
+  background-color: var(--primary-color);
+}
+
+.order-header {
+  gap: 60px;
+}
+
 
 .flash-overlay {
   position: fixed;
@@ -315,6 +337,26 @@ button {
   .product-page .col-lg-4 div {
     margin-bottom: 0 !important;
   }
+
+  .order-header {
+    gap: 48px;
+  }
+
+  
+.profile-tabs{
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  overflow: auto;
+  border-radius: 0.25rem !important;
+}
+
+.profile-tabs a{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, .125) !important;
+  border-radius: 0 !important;
+}
 }
 
 /* Small devices (landscape phones, less than 768px) */
@@ -414,6 +456,10 @@ button {
 
   .filters {
     gap: 0.75em;
+  }
+
+  .order-header {
+    gap: 16px;
   }
 
 }

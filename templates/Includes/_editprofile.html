@@ -1,0 +1,37 @@
+<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{ url_for('edit_profile') }}" id="profile-form">
+                    <div class="form-group">
+                        <label for="fname">First Name</label>
+                        <input type="text" class="form-control" name="fname" id="fname" value="{{ user.first_name }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lname">Last Name</label>
+                        <input type="text" class="form-control" name="lname" id="lname" value="{{ user.last_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" name="email" id="email" value="{{ user.user_email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" class="form-control" name="phone" id="phone" value="{{ user.phone if user.phone}}">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dearch-btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn button" onclick="submitProfileForm()">Update Profile</button>
+            </div>
+        </div>
+    </div>
+</div>

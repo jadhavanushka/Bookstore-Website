@@ -194,12 +194,88 @@ def logout():
 @app.route("/profile")
 @is_logged_in
 def profile():
-    # We need all the account info for the user so we can display it on the profile page
+    user_id = session["id"]
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT * FROM users WHERE user_id = %s", (session["id"],))
-    account = cursor.fetchone()
-    # Show the profile page with account info
-    return render_template("profile.html", account=account)
+    cursor.execute("SELECT * FROM users WHERE user_id = %s", [user_id])
+    user = cursor.fetchone()
+
+    cursor.execute("SELECT * FROM orders WHERE user_id = %s", [user_id])
+    orders = cursor.fetchall()
+
+    for order in orders:
+        cursor.execute(
+            """SELECT Book_Title, Image_URL_L, price, quantity FROM orders NATURAL LEFT JOIN 
+            order_items NATURAL LEFT JOIN books_data WHERE user_id = %s and order_id=%s""",
+            (user_id, order["order_id"]),
+        )
+        order_items = cursor.fetchall()
+        order["order_items"] = order_items
+        
+
+    cursor.execute(
+        "select * from wishlist natural left outer join books_data where user_id=%s",
+        [user_id],
+    )
+    wishlist = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM Addresses WHERE user_id = %s", [user_id])
+    addresses = cursor.fetchall()
+
+    return render_template(
+        "profile.html", user=user, orders=orders, wishlist=wishlist, addresses=addresses
+    )
+
+
+@app.route("/edit_profile", methods=["POST"])
+@is_logged_in
+def edit_profile():
+    user_id = session["id"]
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    fname = request.form.get("fname")
+    lname = request.form.get("lname")
+    email = request.form.get("email")
+    phone = request.form.get("phone")
+
+    cursor.execute(
+        "UPDATE users SET first_name = %s, last_name = %s, user_email = %s, phone = %s WHERE user_id = %s",
+        (fname, lname, email, phone, user_id),
+    )
+    mysql.connection.commit()
+    cursor.close()
+
+    return redirect(url_for("profile", tab='profile-info'))
+
+
+# change password
+@app.route("/change_password", methods=["POST"])
+def change_password():
+    current_password = request.form["current_password"]
+    new_password = request.form["new_password"]
+    confirm = request.form["confirm"]
+    user_id = session["id"]
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT user_password FROM users WHERE user_id = %s", [user_id])
+    user = cursor.fetchone()
+
+    if user["user_password"] == current_password:
+        if new_password == confirm:
+            # Update password
+            cursor.execute(
+                "UPDATE users SET user_password=%s WHERE user_id = %s",
+                (new_password, user_id),
+            )
+            mysql.connection.commit()
+            flash("Password changed successfully", "success")
+        else:
+            flash("Passwords do not match", "danger")
+    else:
+        flash("Incorrect current password", "danger")
+
+    cursor.close()
+    return redirect(url_for("profile", tab='change-password'))
+
 
 
 # Shop page
@@ -536,11 +612,12 @@ def checkout():
             )
 
         # Insert into payments table
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO payments (order_id, payment_date, amount, payment_method, status)
             VALUES (%s, NOW(), %s, %s, %s)
             """,
-            [order_id, total_price, payment_method, 'completed'],
+            [order_id, total_price, payment_method, "completed"],
         )
 
         # Clear the cart
@@ -565,43 +642,87 @@ def order_confirmation(order_id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM Orders WHERE order_id = %s", [order_id])
     order = cursor.fetchone()
+    
     cursor.execute(
         "select * from Order_Items natural left outer join books_data where order_id=%s",
         [order_id],
     )
     order_items = cursor.fetchall()
+    
+    cursor.execute("SELECT * FROM Payments WHERE order_id = %s", [order_id])
+    payment = cursor.fetchone()
+    
+    cursor.execute("SELECT * FROM Addresses WHERE address_id = %s", [order['address_id']])
+    address = cursor.fetchone()
+    
     cursor.close()
 
     return render_template(
-        "order_confirmation.html", order=order, order_items=order_items
+        "order_confirmation.html", order=order, order_items=order_items, payment=payment, address=address
     )
 
 
-@app.route("/add_address", methods=["GET", "POST"])
+@app.route("/save_address", methods=["POST"])
 @is_logged_in
-def add_address():
-    if request.method == "POST":
-        user_id = session["id"]
-        street = request.form.get("street")
-        city = request.form.get("city")
-        state = request.form.get("state")
-        country = request.form.get("country")
-        pincode = request.form.get("pincode")
+def save_address():
+    user_id = session["id"]
+    address_id = request.form.get("address_id")
+    street = request.form.get("street")
+    city = request.form.get("city")
+    state = request.form.get("state")
+    country = request.form.get("country")
+    pincode = request.form.get("pincode")
+    is_default = request.form.get("is_default") == "on"
 
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("""
-            INSERT INTO Addresses (user_id, street, city, state, country,  pincode)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            """,
-            (user_id, street, city, state, country, pincode),
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if is_default:
+        cursor.execute(
+            "UPDATE addresses SET is_primary = 0 WHERE user_id = %s", [user_id]
         )
 
-        mysql.connection.commit()
-        cursor.close()
+    if address_id:  # Update existing address
+        cursor.execute(
+            """
+            UPDATE Addresses
+            SET street=%s, city=%s, state=%s, country=%s, pincode=%s, is_primary=%s
+            WHERE address_id=%s AND user_id=%s
+            """,
+            (street, city, state, country, pincode, is_default, address_id, user_id),
+        )
+    else:
+        cursor.execute(
+            """
+            INSERT INTO addresses (user_id, street, city, state, country, pincode, is_primary)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            (user_id, street, city, state, country, pincode, is_default),
+        )
 
-        return redirect(url_for("checkout"))
+    mysql.connection.commit()
+    cursor.close()
 
-    return render_template("add_address.html")
+    return redirect(url_for("profile", tab='saved-addresses'))
+
+
+@app.route("/delete_address", methods=["POST"])
+@is_logged_in
+def delete_address():
+    user_id = session["id"]
+    address_id = request.form.get("address_id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if address_id:
+        cursor.execute(
+            "UPDATE Addresses SET is_deleted=TRUE WHERE address_id=%s AND user_id=%s",
+            (address_id, user_id),
+        )
+
+    mysql.connection.commit()
+    cursor.close()
+
+    return redirect(url_for("profile", tab='saved-addresses'))
 
 
 if __name__ == "__main__":

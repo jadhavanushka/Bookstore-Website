@@ -4,25 +4,37 @@
 
 {% block content %}
 <div class="container">
-    <div class="row my-md-5 p-5">
+    <div class="row my-md-5 px-5 py-0">
         <div class="col-lg-5 bg-white m-auto my-5 px-4 py-5 shadow-sm"
             style="border: 1px solid #e6e8eb; border-radius: 0.5em;">
             <h2 class="text-center">Order Confirmation</h2>
             <p class="text-center text-muted lead mb-4" style="font-weight: 400;">Thank you for your order!</p>
             <p class="mb-2">Order ID: {{ order.order_id }}</p>
-            <p class="mb-4">Total amount:
-                <span style="font-weight: 500;">₹ {{ order.total_amount }}</span>
+            <p class="mb-2">Ordered on: {{ order.order_date.date() }}</p>
+            <p class="mb-4">Payment method: {{ payment.payment_method }}</p>
+
+            <h5>Delivery address:</h5>
+            <p class="mb-4">{{ order.name }}
+                <br> {{ address.street }}, {{ address.city }}
+                <br> {{ address.state }} - {{ address.pincode }}
+                <br> {{ address.country }}
             </p>
 
-            <h5>Order Details:</h5>
-                {% for item in order_items %}
-                    <div class="d-flex justify-content-between">
-                        <p class="mb-2">{{ item.Book_Title }} ({{ item.quantity }})</p>
-                        <p class="mb-2" style="font-weight: 500;">
-                            ₹ {{ item.quantity * item.price }}
-                        </p>
-                    </div>
-                {% endfor %}
+            <h5>Order Items:</h5>
+            {% for item in order_items %}
+            <div class="d-flex justify-content-between mb-4">
+                <p class="mb-2">{{ item.Book_Title }} ({{ item.quantity }})</p>
+                <p class="mb-2" style="font-weight: 500;">
+                    ₹ {{ item.quantity * item.price }}
+                </p>
+            </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-between">
+                <h5>Total:</h5>
+                <p class="mb-0" style="font-weight: 500;">₹ {{ order.total_amount }}
+                </p>
+            </div>
 
             <a href="{{ url_for('home') }}">
                 <button class="btn mt-2 btn-lg px-4 button mt-4 w-100">Back to Home</button>

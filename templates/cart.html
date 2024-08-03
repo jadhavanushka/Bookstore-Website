@@ -15,16 +15,15 @@
                             <!-- <thead>
                                 <tr>
                                     <th>&nbsp</th>
-                                    <th>Product Image</th>
                                     <th class="text-start">Product</th>
-                                    <th>Price</th>
                                     <th>Quantity</th>
-                                    <th>Total</th>
+                                    <th>Total price</th>
+                                    <th>Delete</th>
                                 </tr>
                             </thead> -->
                             <tbody>
                                 {% for book in cart_books %}
-                                <tr>
+                                <tr style="border-bottom: 1px solid #e6e8eb;">
                                     <td class="product-thumbnail text-center">
                                         <img src="{{  book.Image_URL_L  }}" alt="{{ book.Book_Title }}">
                                     </td>
