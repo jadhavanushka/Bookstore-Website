@@ -30,17 +30,17 @@ mysql = MySQL(app)
 def home():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by Year_of_Publication desc limit 8"
+        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY Year_of_Publication DESC LIMIT 8"
     )
     new = cursor.fetchall()
 
     cursor.execute(
-        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by ratings desc, Year_of_Publication desc limit 8"
+        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY ratings DESC, Year_of_Publication DESC LIMIT 8"
     )
     featured = cursor.fetchall()
 
     cursor.execute(
-        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data order by Year_of_Publication limit 8"
+        "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY Year_of_Publication LIMIT 8"
     )
     classic = cursor.fetchall()
 
@@ -341,6 +341,34 @@ def shop():
         sort=sort,
         search_query=query,
     )
+
+
+@app.route("/shop/category/<category>")
+def shop_category(category):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    
+    if category == 'new':
+        cursor.execute(
+            "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY Year_of_Publication DESC LIMIT 30"
+        )
+    elif category == 'featured':
+        cursor.execute(
+            "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY ratings DESC, Year_of_Publication DESC LIMIT 30"
+        )
+    elif category == 'classic':
+        cursor.execute(
+            "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY Year_of_Publication LIMIT 30"
+        )
+    else:
+        return redirect(url_for("shop"))
+
+    books = cursor.fetchall()
+    
+    if "loggedin" in session:
+        books = isInWishlist(cursor, session["id"], books)
+    
+    cursor.close()
+    return render_template("shop.html", books=books, category=category, total_pages=1, page=1)
 
 
 # Product page

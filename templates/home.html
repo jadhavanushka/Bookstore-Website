@@ -25,7 +25,10 @@
 </section>
 
 <section class="container mt-4 py-4">
-    <h1 class="text-center mb-3">New Arrivals</h1>
+    <a href="{{ url_for('shop_category', category='new') }}">
+        <h1 class="text-center mb-3">New Arrivals</h1>
+    </a>
+
     <div class="featured-books">
 
         {% for book in new %}
@@ -69,16 +72,24 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         {% endfor %}
-
+        <div class="py-4 d-flex align-items-center">
+            <div class="d-flex justify-content-center" style="width: 120px">
+                <a href="{{ url_for('shop_category', category='new') }}">
+                    <button class="btn search-btn">
+                        View more
+                    </button> </a>
+            </div>
+        </div>
     </div>
 </section>
 
 <section class="container mt-3 py-4">
-    <h1 class="text-center mb-3">Featured</h1>
+    <a href="{{ url_for('shop_category', category='featured') }}">
+        <h1 class="text-center mb-3">Featured</h1>
+    </a>
     <div class="featured-books">
 
         {% for book in featured %}
@@ -122,16 +133,25 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         {% endfor %}
 
+        <div class="py-4 d-flex align-items-center">
+            <div class="d-flex justify-content-center" style="width: 120px">
+                <a href="{{ url_for('shop_category', category='featured') }}">
+                    <button class="btn search-btn">
+                        View more
+                    </button> </a>
+            </div>
+        </div>
     </div>
 </section>
 
 <section class="container mt-3 py-4">
-    <h1 class="text-center mb-3">Classics</h1>
+    <a href="{{ url_for('shop_category', category='classic') }}">
+        <h1 class="text-center mb-3">Classics</h1>
+    </a>
     <div class="featured-books">
 
         {% for book in classic %}
@@ -175,11 +195,18 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         {% endfor %}
 
+        <div class="py-4 d-flex align-items-center">
+            <div class="d-flex justify-content-center" style="width: 120px">
+                <a href="{{ url_for('shop_category', category='classic') }}">
+                    <button class="btn search-btn">
+                        View more
+                    </button> </a>
+            </div>
+        </div>
     </div>
 </section>
 
