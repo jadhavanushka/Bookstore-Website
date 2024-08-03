@@ -44,40 +44,41 @@
 
                                     <td class="product-quantity">
                                         <div class="d-flex mx-2">
-                                            <form method="post" action="/dec_quantity">
-                                                <input type="hidden" name="isbn" value="{{ book.isbn }}" />
+                                            <form method="post" action="{{ url_for('update_cart') }}">
+                                                <input type="hidden" name="action" value="decrement">
+                                                <input type="hidden" name="isbn" value="{{ book.isbn }}">
                                                 <button type="submit" class="quantity__minus" {% if book.book_count==1
                                                     %}disabled{% endif %}>
                                                     -
                                                 </button>
                                             </form>
 
-                                            <form method="post" action="/set_quantity">
-                                                <input type="hidden" name="isbn" value="{{ book.isbn }}" />
-
-                                                <input type name="quantity" class="quantity__input"
+                                            <form method="post" action="{{ url_for('update_cart') }}">
+                                                <input type="hidden" name="action" value="set">
+                                                <input type="hidden" name="isbn" value="{{ book.isbn }}">
+                                                <input name="quantity" class="quantity__input"
                                                     value="{{ book.book_count }}">
-                                                <button type="submit" style="display: none;"></button>
                                             </form>
 
-
-                                            <form method="post" action="/inc_quantity">
-                                                <input type="hidden" name="isbn" value="{{ book.isbn }}" />
-                                                <button type="submit" class="quantity__plus">
-                                                    +
-                                                </button>
+                                            <form method="post" action="{{ url_for('update_cart') }}">
+                                                <input type="hidden" name="action" value="increment">
+                                                <input type="hidden" name="isbn" value="{{ book.isbn }}">
+                                                <button type="submit" class="quantity__plus">+</button>
                                             </form>
                                         </div>
                                     </td>
+
                                     <td class="product-total-price text-center" style="font-weight: 500;">
                                         ₹ {{ book.book_count*book.price }}
                                     </td>
 
                                     <td class="text-start del-btn">
-                                        <form method="post" action="/deletefromcart">
-                                            <input type="hidden" name="isbn" value="{{ book.isbn }}" />
+                                        <form method="post" action="{{ url_for('update_cart') }}">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="isbn" value="{{ book.isbn }}">
                                             <button type="submit" class="btn">
-                                                <i class="fa fa-remove" title="Delete"></i></button>
+                                                <i class="fa fa-remove" title="Delete"></i>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>

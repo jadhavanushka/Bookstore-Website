@@ -90,9 +90,10 @@
                             <p class="card-text price lead">₹ {{ book.price }}</p>
 
                             <div class="d-flex justify-content-between">
-                                <form method="post" action="/addtocart" class="w-100 mr-2">
-                                    <input type="hidden" name="isbn" value="{{ book['isbn'] }}" />
-                                    <input type="hidden" name="quantity" value="1" />
+                                <form method="post" action="{{ url_for('update_cart') }}" class="w-100 mr-2">
+                                    <input type="hidden" name="action" value="add">
+                                    <input type="hidden" name="isbn" value="{{ book.isbn }}">
+                                    <input type="hidden" name="quantity" value="1">
                                     <button type="submit" class="btn button w-100">
                                         Add to cart
                                     </button>

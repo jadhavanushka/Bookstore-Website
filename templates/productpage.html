@@ -31,9 +31,10 @@
             <p class="lead my-3" style="font-size: 2em; font-weight: 500;">₹ {{ book['price'] }}</p>
 
             <div class="d-md-flex text-center mt-2" style="gap:1em">
-                <form method="post" action="/addtocart">
-                    <input type="hidden" name="isbn" value="{{ book['isbn'] }}" />
-                    <input type="hidden" name="quantity" value="1" />
+                <form method="post" action="{{ url_for('update_cart') }}">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="isbn" value="{{ book.isbn }}">
+                    <input type="hidden" name="quantity" value="1">
                     <button type="submit" class="button btn w-100 py-3 px-5 my-2">
                         <i class="fa-solid fa-cart-shopping mr-1"></i>
                         Add to cart
