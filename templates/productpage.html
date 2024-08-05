@@ -35,7 +35,7 @@
                     <input type="hidden" name="action" value="add">
                     <input type="hidden" name="isbn" value="{{ book.isbn }}">
                     <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="button btn w-100 py-3 px-5 my-2">
+                    <button type="submit" class="button btn w-100 py-3 px-5 my-lg-2 my-1">
                         <i class="fa-solid fa-cart-shopping mr-1"></i>
                         Add to cart
                     </button>
@@ -43,7 +43,7 @@
 
                 <form method="post" action="{{ '/deletefromwishlist' if wishlist else '/addtowishlist' }}">
                     <input type="hidden" name="isbn" value="{{ book['isbn'] }}" />
-                    <button type="submit" class="explore-btn w-100 btn py-3 px-4 my-2">
+                    <button type="submit" class="explore-btn w-100 btn py-3 px-4 my-lg-2 my-1">
                         {% if wishlist %}
                         <i class="fa-solid fa-heart mr-2"></i>Remove from wishlist
                         {% else %}
@@ -74,19 +74,42 @@
         {% for book in more %}
 
         <div class="py-4">
-            <div class="card">
-                <a href="{{book.isbn}}">
-                    <img src="{{  book.Image_URL_L  }}" class="card-img-top" alt="{{ book.book_title }}">
-                </a>
-                <div class="card-body">
-                    <a href="{{book.isbn}}">
-                        <h5 class="card-title" title="{{ book.book_title }}">{{ book.book_title }}</h5>
+            <div class="products-card ">
+                <div class="card">
+                    <a href="/{{book.isbn}}">
+                        <img src="{{  book.Image_URL_L  }}" class="card-img-top" alt="{{ book.book_title }}">
                     </a>
-                    <p class="card-text">{{ book.book_author }}</p>
-                    <p class="card-text price">₹ {{ book.price }}</p>
-                </div>
-                <div class="card-footer">
-                    <a href="{{book.isbn}}">Learn more</a>
+                    <div class="card-body">
+                        <a href="/{{book.isbn}}">
+                            <h5 class="card-title mb-1" title="{{ book.book_title }}">{{ book.book_title }}</h5>
+                        </a>
+
+                        <p class="card-text mb-2">{{ book.book_author }}</p>
+                        <p class="card-text price lead">₹ {{ book.price }}</p>
+
+                        <div class="d-flex justify-content-between">
+                            <form method="post" action="{{ url_for('update_cart') }}" class="w-100 mr-2">
+                                <input type="hidden" name="action" value="add">
+                                <input type="hidden" name="isbn" value="{{ book.isbn }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn button w-100">
+                                    Add to cart
+                                </button>
+                            </form>
+
+                            <form method="post"
+                                action="{{ '/deletefromwishlist' if book['wish'] else '/addtowishlist' }}">
+                                <input type="hidden" name="isbn" value="{{ book['isbn'] }}" />
+                                <button type="submit" class="btn search-btn">
+                                    {% if book['wish'] %}
+                                    <i class="fa-solid fa-heart"></i>
+                                    {% else %}
+                                    <i class="fa-regular fa-heart"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

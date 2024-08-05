@@ -5,10 +5,10 @@
 {% block content %}
 
 <section class="hero">
-    <div class="container col-xxl-8">
+    <div class="container col-xxl-8" style="margin-top: 0 !important">
         <div class="row flex-lg-row align-items-start g-5 py-5">
             <div class="flex-column w-50 py-4 px-lg-2 px-sm-4">
-                <h1 class="display-4 lh-1 mb-3 text-uppercase">
+                <h1 class="display-4 lh-1 mb-3" style="font-size:72px; line-height: 1em; font-family: Marcellus SC, serif">
                     Discover Your Next Adventure</h1>
                 <p class="lead mb-4" style="font-weight: 400;">
                     Every book has the power to transport you to new worlds. Whether you’re seeking a thrilling mystery,
@@ -26,7 +26,7 @@
 
 <section class="container mt-4 py-4">
     <a href="{{ url_for('shop_category', category='new') }}">
-        <h1 class="text-center mb-3">New Arrivals</h1>
+        <h2 class="text-center">New Arrivals</h2>
     </a>
 
     <div class="featured-books">
@@ -86,9 +86,9 @@
     </div>
 </section>
 
-<section class="container mt-3 py-4">
+<section class="container mt-2 py-4">
     <a href="{{ url_for('shop_category', category='featured') }}">
-        <h1 class="text-center mb-3">Featured</h1>
+        <h2 class="text-center">Featured</h2>
     </a>
     <div class="featured-books">
 
@@ -148,9 +148,9 @@
     </div>
 </section>
 
-<section class="container mt-3 py-4">
+<section class="container mt-2 py-4">
     <a href="{{ url_for('shop_category', category='classic') }}">
-        <h1 class="text-center mb-3">Classics</h1>
+        <h2 class="text-center ">Classics</h2>
     </a>
     <div class="featured-books">
 

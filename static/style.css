@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Roboto:wght@100;300;400;500;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Marcellus&family=Marcellus+SC&display=swap');
 
 *,
 *:after,
@@ -12,8 +13,7 @@
 
 :root {
   --primary-color: #089da1;
-  --secondary-color: #28a745;
-  --tertiary-color: #007d81;
+  --secondary-color:  #007d81;
   --font-family: 'Quicksand', 'Arial, sans-serif';
 }
 
@@ -66,7 +66,7 @@ form a,
 .show-more-btn,
 .order-details {
   text-decoration: none;
-  color: var(--tertiary-color);
+  color: var(--secondary-color);
   font-weight: 600;
   cursor: pointer;
 }
@@ -75,7 +75,7 @@ form a:hover,
 .show-more-btn:hover,
 .order-details:hover {
   text-decoration: underline;
-  color: var(--tertiary-color);
+  color: var(--secondary-color);
 }
 
 button {
@@ -88,25 +88,29 @@ button {
 }
 
 .button:hover {
-  background-color: var(--tertiary-color);
+  background-color: var(--secondary-color);
   color: #fff;
 }
 
 .search-btn,
 .explore-btn {
-  color: var(--tertiary-color);
+  color: var(--secondary-color);
   border: 1px solid #ced4da;
   background: #fff;
 }
 
 .search-btn:hover,
 .explore-btn:hover {
-  color: var(--tertiary-color);
+  color: var(--secondary-color);
   background: #e4ebeb;
 }
 
 .nav-link {
   font-weight: 500;
+}
+
+.dropdown-item:active{
+  background-color: var(--primary-color);
 }
 
 .hero {
@@ -115,7 +119,7 @@ button {
     url("background.jpeg");
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: 70%;
   width: 100%;
   color: #fff;
   text-shadow: #0f234fc2 1px 2px 4px;
@@ -289,7 +293,7 @@ button {
 }
 
 .page-item .page-link {
-  color: var(--tertiary-color);
+  color: var(--secondary-color);
 }
 
 .filters {
@@ -409,6 +413,17 @@ button {
     margin-right: 0 !important;
   }
 
+  .container{
+    margin: auto 0.5em;
+    max-width: 97% !important;
+    margin-top: 20px !important;
+    padding: 16px 0 !important;
+  }
+
+  .hero h1{
+    font-size: 48px !important;
+  }
+
   .hero .flex-column,
   .hero .row {
     width: 100% !important;
@@ -419,6 +434,10 @@ button {
     width: 75% !important;
   }
 
+  .hero button{
+    padding: .375rem .75rem;
+    font-size: 1em;
+  }
   .featured-books {
     padding: 0 16px;
   }
@@ -439,11 +458,6 @@ button {
 
   .featured-books .card img {
     margin-top: 10px;
-  }
-
-  .container {
-    margin-top: 20px !important;
-    padding: 16px 0 !important;
   }
 
   .table th.wide-column,

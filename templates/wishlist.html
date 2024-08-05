@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mb-5 py-5" style="min-height: 80vh;">
     {% if wishlist_books %}
-    <h2 class="text-center">Your wishlist</h2>
+    <h2 class="text-center">Your Wishlist</h2>
     <div class="row py-4">
         <div class="col-lg-8">
             <div class="row g-0">
@@ -48,7 +48,11 @@
                                             <input type="hidden" name="action" value="add">
                                             <input type="hidden" name="isbn" value="{{ book.isbn }}">
                                             <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="button btn">Add to cart</button>
+                                            <button type="submit" class="button btn">
+                                                <i class="fa-solid fa-cart-shopping d-sm-none"></i>
+                                                <span class="d-sm-block d-none">
+                                                    Add to cart</span>
+                                            </button>
                                         </form>
                                     </td>
 

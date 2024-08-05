@@ -19,11 +19,14 @@
                 </ul>
             </div>
             <div class="col-4 col-md-2 mb-3">
-                <h4>Catalog</h4>
+                <h4>Shop</h4>
                 <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">New Arrivals</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Featured</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Classics</a></li>
+                    <li class="nav-item mb-2"><a href="{{ url_for('shop_category', category='new') }}"
+                            class="nav-link p-0 text-body-secondary">New Arrivals</a></li>
+                    <li class="nav-item mb-2"> <a href="{{ url_for('shop_category', category='featured') }}"
+                            class="nav-link p-0 text-body-secondary">Featured</a></li>
+                    <li class="nav-item mb-2"> <a href="{{ url_for('shop_category', category='classic') }}"
+                            class="nav-link p-0 text-body-secondary">Classics</a></li>
                 </ul>
             </div>
             <div class="col-4 col-md-2 mb-3">
@@ -42,13 +45,13 @@
                     <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">News</a></li>
                 </ul>
             </div>
-           <div class="col-4 col-md-2 mb-3">
+            <div class="col-4 col-md-2 mb-3">
                 <h4>Connect</h4>
                 <div class="d-flex">
-                    <a href="#" class="mr-1 mr-md-3" style="font-size: 1.25em;"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="mr-1 mr-md-3" style="font-size: 1.25em;"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="mr-1 mr-md-3" style="font-size: 1.25em;"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="mr-1 mr-md-3" style="font-size: 1.25em;"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="mr-2 mr-md-3" style="font-size: 1.25em;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="mr-2 mr-md-3" style="font-size: 1.25em;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="mr-2 mr-md-3" style="font-size: 1.25em;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="" style="font-size: 1.25em;"><i class="fab fa-linkedin"></i></a>
                 </div>
             </div>
         </div>
