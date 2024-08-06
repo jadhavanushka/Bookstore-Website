@@ -54,7 +54,7 @@
 				<!-- Order History -->
 				<div class="tab-pane fade" id="order-history" role="tabpanel" aria-labelledby="order-history-list">
 					<h3 class="mb-4">Order History</h3>
-
+					{% if orders %}
 					{% for order in orders %}
 					<div class="card mb-4">
 						<div class="card-header d-flex justify-content-between align-items-start" style="gap:16px">
@@ -99,12 +99,33 @@
 						</ul>
 					</div>
 					{% endfor %}
+
+					{% else %}
+					<div class="my-4">
+						<div class="text-center m-auto p-4 shadow-sm"
+							style="width: fit-content; border: 1px solid #e6e8eb; border-radius: 0.5em;">
+							<img src="{{ url_for('static', filename = 'No-Orders.svg') }}" alt="No-Orders"
+								style="width: 200px;">
+							<h3 class="text-dark">No Orders</h3>
+							<p class="text-muted">You have not placed any order yet.
+								<br> Place orders to show here
+							</p>
+							<a href="{{ url_for('wishlist') }}">
+								<button class="btn mt-2 mb-4 px-4 search-btn">Wishlist</button>
+							</a>
+							<a href="{{ url_for('cart') }}">
+								<button class="btn mt-2 mb-4 px-4 button">Cart</button>
+							</a>
+						</div>
+					</div>
+					{% endif %}
 				</div>
 
 				<!-- Wishlist -->
 				<div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-list">
 					<h3>Wishlist</h3>
 
+					{% if addressses %}
 					<table class="table mt-4" style="border: 1px solid #e6e8eb; border-radius: 0.5em;">
 						<!-- <thead>
 							<tr>
@@ -133,7 +154,8 @@
 										<input type="hidden" name="action" value="add">
 										<input type="hidden" name="isbn" value="{{ book.isbn }}">
 										<input type="hidden" name="quantity" value="1">
-										<button type="submit" class="button btn"> <i class="fa-solid fa-cart-shopping d-sm-none"></i>
+										<button type="submit" class="button btn"> <i
+												class="fa-solid fa-cart-shopping d-sm-none"></i>
 											<span class="d-sm-block d-none">
 												Add to cart</span></button>
 									</form>
@@ -149,6 +171,21 @@
 							{% endfor %}
 						</tbody>
 					</table>
+
+					{% else %}
+					<div class="my-4">
+						<div class="text-center m-auto p-4 shadow-sm"
+							style="width: fit-content; border: 1px solid #e6e8eb; border-radius: 0.5em;">
+							<img src="{{ url_for('static', filename = 'Empty-Wishlist.svg') }}" alt="Empty-Wishlist"
+								style="width: 200px;">
+							<h3 class="text-dark">Empty Wishlist</h3>
+							<p class="text-muted">You have not added anything to your wishlist</p>
+							<a href="{{ url_for('shop') }}">
+								<button class="btn mt-2 mb-4 px-4 button">Add books</button>
+							</a>
+						</div>
+					</div>
+					{% endif %}
 				</div>
 
 				<!-- Saved Addresses -->
@@ -161,6 +198,7 @@
 							New address</button>
 					</div>
 
+					{% if addressses %}
 					<ul class="list-group">
 						{% for address in addresses if address.is_deleted == False %}
 
@@ -183,9 +221,23 @@
 								</form>
 							</div>
 						</li>
-
 						{% endfor %}
 					</ul>
+
+					{% else %}
+					<div class="my-4">
+						<div class="text-center m-auto p-4 shadow-sm"
+							style="width: fit-content; border: 1px solid #e6e8eb; border-radius: 0.5em;">
+							<img src="{{ url_for('static', filename = 'No-address.svg') }}" alt="No-address"
+								style="width: 200px;">
+							<h3 class="text-dark">No Address Saved</h3>
+							<p class="text-muted">You have not saved any address</p>
+							<button class="btn mt-2 mb-4 px-4 button" onclick="populateAddressForm(null)"
+								data-toggle="modal" data-target="#address_modal">
+								Add address</button>
+						</div>
+					</div>
+					{% endif %}
 				</div>
 
 				<!-- Security Settings -->

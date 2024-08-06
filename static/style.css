@@ -115,7 +115,7 @@ button {
 
 .hero {
   background-image:
-    linear-gradient(to right, rgba(33, 96, 104, 0.6), rgba(255, 255, 255, 0)),
+    linear-gradient(to right, rgba(1, 89, 92, 0.6), rgba(255, 255, 255, 0)),
     url("background.jpeg");
   background-size: cover;
   background-repeat: no-repeat;

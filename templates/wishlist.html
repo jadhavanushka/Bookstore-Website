@@ -82,15 +82,16 @@
         </div>
 
         {% else %}
-        <div class="container p-5">
-            <div class="my-5 p-5">
-                <div class="text-center m-auto p-5 shadow-sm"
-                    style="width: fit-content; border: 1px solid #e6e8eb; border-radius: 0.5em;">
-                    <h3 class="text-muted">Your wishlist is empty</h3>
-                    <a href="{{ url_for('home') }}">
-                        <button class="btn mt-2 btn-lg px-4 button">Back to Home</button>
-                    </a>
-                </div>
+        <div class="container p-4">
+            <div class="text-center m-auto p-4 shadow-sm"
+                style="width: fit-content; border: 1px solid #e6e8eb; border-radius: 0.5em;">
+                <img src="{{ url_for('static', filename = 'Empty-Wishlist.svg') }}" alt="Empty-Wishlist"
+                    style="width: 200px;">
+                <h3 class="text-dark">Empty Wishlist</h3>
+                <p class="text-muted">You have not added anything to your wishlist</p>
+                <a href="{{ url_for('shop') }}">
+                    <button class="btn mt-2 mb-4 px-4 button">Add books</button>
+                </a>
             </div>
         </div>
         {% endif %}

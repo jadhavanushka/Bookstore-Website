@@ -3,12 +3,9 @@ import requests
 def get_book_description(isbn):
     url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}"
     response = requests.get(url)
-    
-    if response:
-        data = response.json()
-        if 'items' in data:
-            return data['items'][0]['volumeInfo'].get('description', 'No description available.')
-    return 'No description available.'
+    response.raise_for_status()
+    data = response.json()
+    return data['items'][0]['volumeInfo'].get('description', 'No description available')
 
 
 def get_recommendations(cursor, book):

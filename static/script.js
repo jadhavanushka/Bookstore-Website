@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 // Go to top button
+
 window.onscroll = function() {scrollFunction()};
 
 function scrollFunction() {
@@ -23,11 +24,23 @@ function scrollFunction() {
     }
 }
 
-// When the user clicks on the button, scroll to the top of the document
 function topFunction() {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 }
+
+
+// No internet
+window.addEventListener('load', () => {
+ // Get the no internet URL from the data attribute
+ const noInternetUrl = document.querySelector('main').getAttribute('data-no-internet-url');
+        
+ // Add event listener for offline detection
+ window.addEventListener('offline', function() {
+     window.location.href = noInternetUrl;
+ });
+});
+
 
 // toggle description
 
@@ -87,6 +100,7 @@ function populateAddressForm(address) {
   }
 }
 
+// profile tabs
 document.addEventListener("DOMContentLoaded", function() {
   // Function to update URL query parameter
   function updateQueryParam(param, value) {

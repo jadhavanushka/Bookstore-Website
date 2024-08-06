@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+
+<div class="container my-5 py-5" style="min-height: 80vh;">
+    <div class="text-center m-auto p-4 my-4 shadow-sm"
+        style="width: fit-content; border: 1px solid #e6e8eb; border-radius: 0.5em;">
+        <img src="{{ url_for('static', filename = '404-Page-Not-Found.svg') }}" alt="404-Page-Not-Found"
+            style="width: 200px;">
+        <h3 class="text-dark">404 - Page Not Found</h3>
+        <p class="text-muted">The page you are looking for does not exist</p>
+        <a href="{{ url_for('home') }}">
+            <button class="btn mt-2 mb-4 px-4 button">Go to Home</button>
+        </a>
+    </div>
+</div>
+
+{% endblock %}

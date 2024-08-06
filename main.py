@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from functools import wraps
 import MySQLdb.cursors
 import re
+from requests.exceptions import ConnectionError
 from utils import (
     get_book_description,
     get_recommendations,
@@ -159,7 +160,7 @@ def login():
         else:
             # Account doesnt exist email is incorrect
             msg = "Cannot find the account. Incorrect email"
-        
+
         cursor.close()
     return render_template("login.html", msg=msg)
 
@@ -346,16 +347,16 @@ def shop():
 @app.route("/shop/category/<category>")
 def shop_category(category):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    
-    if category == 'new':
+
+    if category == "new":
         cursor.execute(
             "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY Year_of_Publication DESC LIMIT 30"
         )
-    elif category == 'featured':
+    elif category == "featured":
         cursor.execute(
             "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY ratings DESC, Year_of_Publication DESC LIMIT 30"
         )
-    elif category == 'classic':
+    elif category == "classic":
         cursor.execute(
             "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY Year_of_Publication LIMIT 30"
         )
@@ -363,12 +364,14 @@ def shop_category(category):
         return redirect(url_for("shop"))
 
     books = cursor.fetchall()
-    
+
     if "loggedin" in session:
         books = isInWishlist(cursor, session["id"], books)
-    
+
     cursor.close()
-    return render_template("shop.html", books=books, category=category, total_pages=1, page=1)
+    return render_template(
+        "shop.html", books=books, category=category, total_pages=1, page=1
+    )
 
 
 # Product page
@@ -381,7 +384,11 @@ def productpage(isbn):
     )
     book = cursor.fetchone()
 
-    description = get_book_description(isbn)
+    try:
+        description = get_book_description(isbn)
+    except ConnectionError:
+        app.logger.error("Failed to connect to Google API.")
+        return render_template("500.html"), 500
 
     wishlist = {}
     if "loggedin" in session:
@@ -445,7 +452,7 @@ def addtowishlist():
             )
             mysql.connection.commit()
             flash("Added to wishlist", "success")
-    
+
     cursor.close()
     return redirect(url_for("shop"))
 
@@ -461,7 +468,7 @@ def deletefromwishlist():
         )
         mysql.connection.commit()
         cursor.close()
-        
+
         flash("Removed from wishlist", "success")
         return redirect(url_for("wishlist"))
 
@@ -544,7 +551,6 @@ def update_cart():
             "DELETE FROM cart WHERE isbn = %s AND user_id = %s", (isbn, user_id)
         )
         flash("Removed from cart", "success")
-        
 
     mysql.connection.commit()
     cursor.close()
@@ -717,6 +723,21 @@ def delete_address():
     cursor.close()
 
     return redirect(url_for("profile", tab="saved-addresses"))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template("500.html"), 500
+
+
+@app.route("/no_internet")
+def no_internet():
+    return render_template("no_internet.html")
 
 
 if __name__ == "__main__":
