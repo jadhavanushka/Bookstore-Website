@@ -202,7 +202,7 @@ def profile():
     cursor.execute("SELECT * FROM users WHERE user_id = %s", [user_id])
     user = cursor.fetchone()
 
-    cursor.execute("SELECT * FROM orders WHERE user_id = %s", [user_id])
+    cursor.execute("SELECT * FROM orders WHERE user_id = %s ORDER BY order_date DESC", [user_id])
     orders = cursor.fetchall()
 
     for order in orders:
@@ -454,7 +454,7 @@ def addtowishlist():
             flash("Added to wishlist", "success")
 
     cursor.close()
-    return redirect(url_for("shop"))
+    return redirect(request.referrer or url_for("wishlist"))
 
 
 # Delete book from the wishlist
@@ -470,7 +470,7 @@ def deletefromwishlist():
         cursor.close()
 
         flash("Removed from wishlist", "success")
-        return redirect(url_for("wishlist"))
+        return redirect(request.referrer or url_for("wishlist"))
 
 
 @app.route("/cart")
@@ -555,7 +555,7 @@ def update_cart():
     mysql.connection.commit()
     cursor.close()
 
-    return redirect(url_for("cart"))
+    return redirect(request.referrer or url_for('cart'))
 
 
 # checkout page
@@ -702,7 +702,7 @@ def save_address():
     mysql.connection.commit()
     cursor.close()
 
-    return redirect(url_for("profile", tab="saved-addresses"))
+    return redirect(request.referrer or url_for("profile", tab="saved-addresses"))
 
 
 @app.route("/delete_address", methods=["POST"])

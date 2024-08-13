@@ -125,7 +125,7 @@
 				<div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-list">
 					<h3>Wishlist</h3>
 
-					{% if addressses %}
+					{% if wishlist %}
 					<table class="table mt-4" style="border: 1px solid #e6e8eb; border-radius: 0.5em;">
 						<!-- <thead>
 							<tr>
@@ -198,7 +198,7 @@
 							New address</button>
 					</div>
 
-					{% if addressses %}
+					{% if addresses %}
 					<ul class="list-group">
 						{% for address in addresses if address.is_deleted == False %}
 
