@@ -1,7 +1,7 @@
 # Bookstore Website - Book Haven
 
 This full-featured online bookstore website is built using Flask, MySQL, and Bootstrap. It allows users to browse books, add them to their wishlist or cart, and make purchases.
-The project is deployed on Google Cloud. You can check it out [here](https://abiding-splicer-433313-j2.el.r.appspot.com)
+The project is deployed on Google Cloud. You can check it out [here](https://book-haven-7.as.r.appspot.com)
 
 ## Features
 

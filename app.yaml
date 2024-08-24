@@ -2,9 +2,9 @@ runtime: python39  # Use the appropriate Python version
 entrypoint: gunicorn -b :$PORT app:app
 
 env_variables:
-  INSTANCE_CONNECTION_NAME: "abiding-splicer-433313-j2:asia-south1:bookhaven"
-  GOOGLE_APPLICATION_CREDENTIALS: "./abiding-splicer-433313-j2-34f3610366ef.json"
+  INSTANCE_CONNECTION_NAME: "book-haven-7:asia-south1:book-haven"
+  GOOGLE_APPLICATION_CREDENTIALS: "./book-haven-7-7f3746db4c2a.json"
 
 # Required Libraries (for Cloud SQL)
 beta_settings:
-  cloud_sql_instances: abiding-splicer-433313-j2:asia-south1:bookhaven
+  cloud_sql_instances: book-haven-7:asia-south1:book-haven
