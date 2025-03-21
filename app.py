@@ -762,6 +762,3 @@ def internal_server_error(e):
 def no_internet():
     return render_template("no_internet.html")
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
