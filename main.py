@@ -1,7 +1,9 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_mysqldb import MySQL
 from functools import wraps
-import MySQLdb.cursors
+import pymysql
+import pymysql.cursors
+import os
+from dotenv import load_dotenv
 import re
 from requests.exceptions import ConnectionError
 from utils import (
@@ -14,22 +16,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-app.secret_key = "your secret key"
+app.secret_key = os.getenv("SECRET_KEY")
 
-# Enter your database connection details below
-app.config["MYSQL_HOST"] = "localhost"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "MySQLServer8.0.29"
-app.config["MYSQL_DB"] = "bookstore"
+load_dotenv()  # Load from .env
 
-# Intialize MySQL
-mysql = MySQL(app)
+
+def get_db_connection():
+    return pymysql.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        database=os.getenv("DB_NAME"),
+        cursorclass=pymysql.cursors.DictCursor,
+    )
 
 
 # Home page
 @app.route("/")
 def home():
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute(
         "SELECT isbn, book_title, book_author, Image_URL_L, price FROM books_data ORDER BY Year_of_Publication DESC LIMIT 8"
     )
@@ -75,7 +81,8 @@ def signup():
         confirm = request.form["confirm"]
 
         # Check if account exists
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE user_email = %s", [email])
         account = cursor.fetchone()
 
@@ -94,7 +101,7 @@ def signup():
                 "INSERT INTO users VALUES (NULL, %s, %s, %s, %s, NULL)",
                 (fname, lname, email, hashed_password),
             )
-            mysql.connection.commit()
+            conn()
 
             # Log in to the account
             cursor.execute("SELECT user_id FROM users WHERE user_email = %s", [email])
@@ -135,7 +142,8 @@ def login():
         password = request.form["password"]
 
         # Check if account exists using MySQL
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE user_email = %s", [email])
         # Fetch one record and return result
         account = cursor.fetchone()
@@ -198,7 +206,8 @@ def logout():
 @is_logged_in
 def profile():
     user_id = session["id"]
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE user_id = %s", [user_id])
     user = cursor.fetchone()
 
@@ -233,7 +242,8 @@ def profile():
 @is_logged_in
 def edit_profile():
     user_id = session["id"]
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
     fname = request.form.get("fname")
     lname = request.form.get("lname")
@@ -244,7 +254,7 @@ def edit_profile():
         "UPDATE users SET first_name = %s, last_name = %s, user_email = %s, phone = %s WHERE user_id = %s",
         (fname, lname, email, phone, user_id),
     )
-    mysql.connection.commit()
+    conn()
     cursor.close()
 
     return redirect(url_for("profile", tab="profile-info"))
@@ -258,7 +268,8 @@ def change_password():
     confirm = request.form["confirm"]
     user_id = session["id"]
 
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute("SELECT user_password FROM users WHERE user_id = %s", [user_id])
     user = cursor.fetchone()
 
@@ -270,7 +281,7 @@ def change_password():
                 "UPDATE users SET user_password=%s WHERE user_id = %s",
                 (hashed_new_password, user_id),
             )
-            mysql.connection.commit()
+            conn()
             flash("Password changed successfully", "success")
         else:
             flash("Passwords do not match", "danger")
@@ -284,7 +295,8 @@ def change_password():
 # Shop page
 @app.route("/shop")
 def shop():
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
     # Get filter and sort parameters
     min_price = request.args.get("min_price", 0, type=int)
@@ -346,7 +358,8 @@ def shop():
 
 @app.route("/shop/category/<category>")
 def shop_category(category):
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
     if category == "new":
         cursor.execute(
@@ -377,7 +390,8 @@ def shop_category(category):
 # Product page
 @app.route("/shop/<isbn>")
 def productpage(isbn):
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute(
         "SELECT isbn, book_title, book_author, ratings, num_ratings, price, Image_URL_L, year_of_publication, publisher FROM books_data WHERE isbn = %s",
         [isbn],
@@ -415,7 +429,8 @@ def productpage(isbn):
 @app.route("/wishlist")
 @is_logged_in
 def wishlist():
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute(
         "select * from wishlist natural left outer join books_data where user_id=%s",
         [session["id"]],
@@ -432,7 +447,8 @@ def wishlist():
 def addtowishlist():
     isbn = request.form["isbn"]
     if isbn and request.method == "POST":
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute("SELECT isbn FROM books_data where isbn=%s", [isbn])
         # Fetch one record and return result
         book = cursor.fetchone()
@@ -450,7 +466,7 @@ def addtowishlist():
             cursor.execute(
                 "INSERT INTO wishlist VALUES (%s, %s)", ((session["id"]), isbn)
             )
-            mysql.connection.commit()
+            conn()
             flash("Added to wishlist", "success")
 
     cursor.close()
@@ -462,11 +478,12 @@ def addtowishlist():
 def deletefromwishlist():
     isbn = request.form["isbn"]
     if isbn and request.method == "POST":
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute(
             "delete from wishlist where isbn=%s and user_id=%s", (isbn, session["id"])
         )
-        mysql.connection.commit()
+        conn()
         cursor.close()
 
         flash("Removed from wishlist", "success")
@@ -476,7 +493,8 @@ def deletefromwishlist():
 @app.route("/cart")
 @is_logged_in
 def cart():
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute(
         "select * from cart natural left outer join books_data where user_id=%s",
         [session["id"]],
@@ -497,7 +515,8 @@ def update_cart():
     quantity = int(request.form.get("quantity", 1))
     user_id = session["id"]
 
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
     if action == "add":
         cursor.execute(
@@ -552,7 +571,7 @@ def update_cart():
         )
         flash("Removed from cart", "success")
 
-    mysql.connection.commit()
+    conn()
     cursor.close()
 
     return redirect(request.referrer or url_for('cart'))
@@ -565,7 +584,8 @@ def checkout():
     user_id = session["id"]
 
     # Fetch existing addresses
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM Addresses WHERE user_id = %s", [user_id])
     addresses = cursor.fetchall()
 
@@ -617,7 +637,7 @@ def checkout():
         # Clear the cart
         cursor.execute("DELETE FROM Cart WHERE user_id = %s", [user_id])
 
-        mysql.connection.commit()
+        conn()
         cursor.close()
         return redirect(url_for("order_confirmation", order_id=order_id))
 
@@ -633,7 +653,8 @@ def checkout():
 @is_logged_in
 def order_confirmation(order_id):
     # Fetch order details for confirmation page
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM Orders WHERE order_id = %s", [order_id])
     order = cursor.fetchone()
 
@@ -674,7 +695,8 @@ def save_address():
     pincode = request.form.get("pincode")
     is_default = request.form.get("is_default") == "on"
 
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
     if is_default:
         cursor.execute(
@@ -699,7 +721,7 @@ def save_address():
             (user_id, street, city, state, country, pincode, is_default),
         )
 
-    mysql.connection.commit()
+    conn()
     cursor.close()
 
     return redirect(request.referrer or url_for("profile", tab="saved-addresses"))
@@ -711,7 +733,8 @@ def delete_address():
     user_id = session["id"]
     address_id = request.form.get("address_id")
 
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
     if address_id:
         cursor.execute(
@@ -719,7 +742,7 @@ def delete_address():
             (address_id, user_id),
         )
 
-    mysql.connection.commit()
+    conn()
     cursor.close()
 
     return redirect(url_for("profile", tab="saved-addresses"))
