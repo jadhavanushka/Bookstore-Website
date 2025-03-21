@@ -1,6 +1,5 @@
 Flask
-Flask-MySQLdb
-gunicorn
-python-dotenv
+pymysql
 requests
 Werkzeug
+dotenv

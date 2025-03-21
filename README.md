@@ -1,7 +1,6 @@
 # Bookstore Website - Book Haven
 
-This full-featured online bookstore website is built using Flask, MySQL, and Bootstrap. It allows users to browse books, add them to their wishlist or cart, and make purchases.
-The project is deployed on Google Cloud. You can check it out [here](https://book-haven-7.as.r.appspot.com)
+This full-featured online bookstore website is built using Flask, MySQL, and Bootstrap. It allows users to browse books, add them to their wishlist or cart, and make purchases. The project is deployed on AlwaysData. You can check it out [here](https://bookhaven.alwaysdata.net/)
 
 ## Features
 
@@ -18,8 +17,7 @@ The project is deployed on Google Cloud. You can check it out [here](https://boo
 
 - **Backend**: Flask, MySQL
 - **Frontend**: Jinja2 templating, Bootstrap
-- **Database**: Google Cloud SQL (MySQL)
-- **Deployment**: Google Cloud App Engine
+- **Database & Deployment**: AlwaysData
 - **APIs Used**: Google Books API for fetching book descriptions.
 
 ## Getting Started
@@ -28,7 +26,6 @@ The project is deployed on Google Cloud. You can check it out [here](https://boo
 
 - Python 3.8+
 - MySQL
-- Google Cloud SDK (for deployment)
 - MySQL Workbench or any MySQL client (for local development)
 
 ### Installation
@@ -52,22 +49,14 @@ The project is deployed on Google Cloud. You can check it out [here](https://boo
 
 4. Set up your `.env` file with the following variables:
    ```bash
+   DB_HOST=your_db_host
    DB_USER=your_db_user
    DB_PASS=your_db_password
    DB_NAME=your_db_name
-   DB_PORT=3306
-   INSTANCE_CONNECTION_NAME=your_instance_connection_name
+   SECRET_KEY=your_secret_key_here
    ```
 
 5. Run the development server:
    ```bash
    flask run
-   ```
-
-### Deployment
-
-1. Ensure you have the Google Cloud SDK installed and authenticated.
-2. Deploy the app using App Engine:
-   ```bash
-   gcloud app deploy
    ```
