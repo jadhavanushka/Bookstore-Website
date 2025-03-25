@@ -23,11 +23,11 @@ load_dotenv()  # Load from .env
 
 def get_db_connection():
     return pymysql.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASS"),
-        database=os.getenv("DB_NAME"),
-        cursorclass=pymysql.cursors.DictCursor,
+        host = os.getenv("DB_HOST"),
+        user = os.getenv("DB_USER"),
+        password = os.getenv("DB_PASS"),
+        database = os.getenv("DB_NAME"),
+        cursorclass = pymysql.cursors.DictCursor,
     )
 
 
@@ -55,8 +55,10 @@ def home():
         new = isInWishlist(cursor, session["id"], new)
         featured = isInWishlist(cursor, session["id"], featured)
         classic = isInWishlist(cursor, session["id"], classic)
-
+        
     cursor.close()
+    conn.close()
+    
     return render_template("home.html", new=new, classic=classic, featured=featured)
 
 
@@ -101,7 +103,7 @@ def signup():
                 "INSERT INTO users VALUES (NULL, %s, %s, %s, %s, NULL)",
                 (fname, lname, email, hashed_password),
             )
-            conn()
+            conn.commit()
 
             # Log in to the account
             cursor.execute("SELECT user_id FROM users WHERE user_email = %s", [email])
@@ -121,6 +123,7 @@ def signup():
                 return redirect(url_for("home"))
 
         cursor.close()
+        conn.close()
 
     # Show registration form with message (if any)
     return render_template("signup.html", msg=msg)
@@ -170,6 +173,8 @@ def login():
             msg = "Cannot find the account. Incorrect email"
 
         cursor.close()
+        conn.close()
+        
     return render_template("login.html", msg=msg)
 
 
@@ -229,9 +234,10 @@ def profile():
     )
     wishlist = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM Addresses WHERE user_id = %s", [user_id])
+    cursor.execute("SELECT * FROM addresses WHERE user_id = %s", [user_id])
     addresses = cursor.fetchall()
     cursor.close()
+    conn.close()
 
     return render_template(
         "profile.html", user=user, orders=orders, wishlist=wishlist, addresses=addresses
@@ -254,9 +260,11 @@ def edit_profile():
         "UPDATE users SET first_name = %s, last_name = %s, user_email = %s, phone = %s WHERE user_id = %s",
         (fname, lname, email, phone, user_id),
     )
-    conn()
+    
+    conn.commit()
     cursor.close()
-
+    conn.close()
+    
     return redirect(url_for("profile", tab="profile-info"))
 
 
@@ -281,7 +289,7 @@ def change_password():
                 "UPDATE users SET user_password=%s WHERE user_id = %s",
                 (hashed_new_password, user_id),
             )
-            conn()
+            conn.commit()
             flash("Password changed successfully", "success")
         else:
             flash("Passwords do not match", "danger")
@@ -289,6 +297,8 @@ def change_password():
         flash("Incorrect current password", "danger")
 
     cursor.close()
+    conn.close()
+    
     return redirect(url_for("profile", tab="change-password"))
 
 
@@ -343,6 +353,8 @@ def shop():
         books = isInWishlist(cursor, session["id"], books)
 
     cursor.close()
+    conn.close()
+    
     return render_template(
         "shop.html",
         books=books,
@@ -382,6 +394,8 @@ def shop_category(category):
         books = isInWishlist(cursor, session["id"], books)
 
     cursor.close()
+    conn.close()
+    
     return render_template(
         "shop.html", books=books, category=category, total_pages=1, page=1
     )
@@ -416,6 +430,8 @@ def productpage(isbn):
     more = get_recommendations(cursor, book)
 
     cursor.close()
+    conn.close()
+    
     return render_template(
         "productpage.html",
         book=book,
@@ -437,6 +453,7 @@ def wishlist():
     )
     wishlist_books = cursor.fetchall()
     cursor.close()
+    conn.close()
 
     return render_template("wishlist.html", wishlist_books=wishlist_books)
 
@@ -466,10 +483,12 @@ def addtowishlist():
             cursor.execute(
                 "INSERT INTO wishlist VALUES (%s, %s)", ((session["id"]), isbn)
             )
-            conn()
+            conn.commit()
             flash("Added to wishlist", "success")
 
     cursor.close()
+    conn.close()
+    
     return redirect(request.referrer or url_for("wishlist"))
 
 
@@ -483,8 +502,9 @@ def deletefromwishlist():
         cursor.execute(
             "delete from wishlist where isbn=%s and user_id=%s", (isbn, session["id"])
         )
-        conn()
+        conn.commit()
         cursor.close()
+        conn.close()
 
         flash("Removed from wishlist", "success")
         return redirect(request.referrer or url_for("wishlist"))
@@ -501,7 +521,8 @@ def cart():
     )
     cart_books = cursor.fetchall()
     cursor.close()
-
+    conn.close()
+    
     cart_total = sum(item["price"] * item["book_count"] for item in cart_books)
 
     return render_template("cart.html", cart_books=cart_books, cart_total=cart_total)
@@ -571,9 +592,10 @@ def update_cart():
         )
         flash("Removed from cart", "success")
 
-    conn()
+    conn.commit()
     cursor.close()
-
+    conn.close()
+    
     return redirect(request.referrer or url_for('cart'))
 
 
@@ -586,7 +608,7 @@ def checkout():
     # Fetch existing addresses
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Addresses WHERE user_id = %s", [user_id])
+    cursor.execute("SELECT * FROM addresses WHERE user_id = %s", [user_id])
     addresses = cursor.fetchall()
 
     # Fetch cart items
@@ -605,10 +627,10 @@ def checkout():
         address_id = request.form.get("address_id")
         payment_method = request.form.get("payment_method")
 
-        # Insert into Orders table
+        # Insert into orders table
         cursor.execute(
             """
-            INSERT INTO Orders (user_id, name, phone, address_id, total_amount, order_date)
+            INSERT INTO orders (user_id, name, phone, address_id, total_amount, order_date)
             VALUES (%s, %s, %s, %s, %s, NOW())
             """,
             [user_id, name, phone, address_id, total_price],
@@ -619,7 +641,7 @@ def checkout():
         for item in cart_items:
             cursor.execute(
                 """
-                INSERT INTO Order_Items (order_id, isbn, quantity, price)
+                INSERT INTO order_items (order_id, isbn, quantity, price)
                 VALUES (%s, %s, %s, %s)
                 """,
                 [order_id, item["isbn"], item["book_count"], item["price"]],
@@ -637,8 +659,10 @@ def checkout():
         # Clear the cart
         cursor.execute("DELETE FROM Cart WHERE user_id = %s", [user_id])
 
-        conn()
+        conn.commit()
         cursor.close()
+        conn.close()
+        
         return redirect(url_for("order_confirmation", order_id=order_id))
 
     return render_template(
@@ -655,25 +679,26 @@ def order_confirmation(order_id):
     # Fetch order details for confirmation page
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Orders WHERE order_id = %s", [order_id])
+    cursor.execute("SELECT * FROM orders WHERE order_id = %s", [order_id])
     order = cursor.fetchone()
 
     cursor.execute(
-        "select * from Order_Items natural left outer join books_data where order_id=%s",
+        "select * from order_items natural left outer join books_data where order_id=%s",
         [order_id],
     )
     order_items = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM Payments WHERE order_id = %s", [order_id])
+    cursor.execute("SELECT * FROM payments WHERE order_id = %s", [order_id])
     payment = cursor.fetchone()
 
     cursor.execute(
-        "SELECT * FROM Addresses WHERE address_id = %s", [order["address_id"]]
+        "SELECT * FROM addresses WHERE address_id = %s", [order["address_id"]]
     )
     address = cursor.fetchone()
 
     cursor.close()
-
+    conn.close()
+    
     return render_template(
         "order_confirmation.html",
         order=order,
@@ -706,7 +731,7 @@ def save_address():
     if address_id:  # Update existing address
         cursor.execute(
             """
-            UPDATE Addresses
+            UPDATE addresses
             SET street=%s, city=%s, state=%s, country=%s, pincode=%s, is_primary=%s
             WHERE address_id=%s AND user_id=%s
             """,
@@ -721,8 +746,9 @@ def save_address():
             (user_id, street, city, state, country, pincode, is_default),
         )
 
-    conn()
+    conn.commit()
     cursor.close()
+    conn.close()
 
     return redirect(request.referrer or url_for("profile", tab="saved-addresses"))
 
@@ -738,12 +764,13 @@ def delete_address():
 
     if address_id:
         cursor.execute(
-            "UPDATE Addresses SET is_deleted=TRUE WHERE address_id=%s AND user_id=%s",
+            "UPDATE addresses SET is_deleted=TRUE WHERE address_id=%s AND user_id=%s",
             (address_id, user_id),
         )
 
-    conn()
+    conn.commit()
     cursor.close()
+    conn.close()
 
     return redirect(url_for("profile", tab="saved-addresses"))
 
