@@ -53,10 +53,27 @@ This full-featured online bookstore website is built using Flask, MySQL, and Boo
    DB_USER=your_db_user
    DB_PASS=your_db_password
    DB_NAME=your_db_name
-   SECRET_KEY=your_secret_key_here
+   SECRET_KEY=your_secret_key
    ```
 
-5. Run the development server:
+5. Set up the database:
+
+   Create the database:
+      ```bash
+      mysql -u your_db_user -p -e "CREATE DATABASE your_db_name;"
+      ```
+
+   Import the schema:
+      ```bash
+      mysql -u your_db_user -p your_db_name < database/schema.sql
+      ```
+
+   Import books data:
+      ```bash
+      mysql -u your_db_user -p your_db_name < database/books_data.sql
+      ```
+
+6. Run the development server:
    ```bash
    flask run
    ```
